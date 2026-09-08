@@ -147,6 +147,10 @@ button{font-family:inherit}
 .sum div{flex:1}
 .sum p{margin:0 0 5px;font-size:11.5px;color:var(--ink3)}
 .sum b{font-size:19px;font-weight:400}
+/* 可点击设置的统计项：蓝色数字作可点提示，按压有反馈 */
+.sum .tap{cursor:pointer;border-radius:14px;transition:opacity .15s}
+.sum .tap:active{opacity:.5}
+.sum .tap b{color:var(--blue-d)}
 /* 月历浮层 */
 .cal{margin:12px 22px 0;background:#fff;border:.5px solid var(--line);border-radius:24px;padding:14px 12px 10px;display:none;position:relative;z-index:5}
 .cal.on{display:block;animation:fade .25s ease}
@@ -227,7 +231,7 @@ button{font-family:inherit}
 
   <!-- 首页 -->
   <section class="view on" id="v-home">
-    <svg class="wash" width="390" height="330" viewBox="0 0 390 330"><g filter="url(#wc)" opacity=".55"><ellipse cx="195" cy="150" rx="140" ry="118" fill="#C9DFF2"/><ellipse cx="175" cy="140" rx="112" ry="96" fill="#DCEBF8" opacity=".8"/></g><g filter="url(#wc2)" opacity=".4"><ellipse cx="300" cy="70" rx="66" ry="46" fill="#BFD9F0"/><ellipse cx="70" cy="240" rx="54" ry="34" fill="#D6E8F6"/></g></svg>
+    <svg class="wash" width="390" height="330" viewBox="0 0 390 330"><g filter="url(#wc)" opacity=".55"><ellipse cx="195" cy="150" rx="140" ry="118" fill="#C9DFF2"/><ellipse cx="175" cy="140" rx="112" ry="96" fill="#DCEBF8" opacity=".8"/><ellipse cx="240" cy="190" rx="82" ry="60" fill="#D3E5F6" opacity=".7"/></g><g filter="url(#wc2)" opacity=".4"><ellipse cx="300" cy="70" rx="66" ry="46" fill="#BFD9F0"/><ellipse cx="70" cy="240" rx="54" ry="34" fill="#D6E8F6"/><ellipse cx="330" cy="205" rx="42" ry="30" fill="#E4EFF9"/><ellipse cx="105" cy="78" rx="46" ry="30" fill="#C7DEF1"/></g><g filter="url(#wc2)" opacity=".3"><ellipse cx="58" cy="120" rx="34" ry="24" fill="#F0E7D8"/><ellipse cx="322" cy="268" rx="38" ry="24" fill="#DFEDE3"/></g></svg>
     <div class="status"><span id="clock">--:--</span><span>轻账</span></div>
     <div class="bodyz">
       <div class="hero">
@@ -251,7 +255,7 @@ button{font-family:inherit}
 
   <!-- 明细 -->
   <section class="view" id="v-detail">
-    <svg class="wash" width="390" height="180" viewBox="0 0 390 180"><g filter="url(#wc)" opacity=".4"><ellipse cx="120" cy="50" rx="150" ry="90" fill="#DCEBF8"/></g></svg>
+    <svg class="wash" width="390" height="180" viewBox="0 0 390 180"><g filter="url(#wc)" opacity=".4"><ellipse cx="120" cy="50" rx="150" ry="90" fill="#DCEBF8"/><ellipse cx="170" cy="80" rx="85" ry="55" fill="#D0E4F5" opacity=".7"/></g><g filter="url(#wc2)" opacity=".32"><ellipse cx="320" cy="45" rx="60" ry="38" fill="#C7DEF1"/><ellipse cx="45" cy="120" rx="38" ry="22" fill="#F0E7D8"/></g></svg>
     <div class="status"><span id="clock2">--:--</span><span>明细</span></div>
     <div class="bodyz">
       <div class="mtitle" onclick="toggleCal()">
@@ -274,7 +278,7 @@ button{font-family:inherit}
 
   <!-- 统计 -->
   <section class="view" id="v-stat">
-    <svg class="wash" width="390" height="220" viewBox="0 0 390 220"><g filter="url(#wc)" opacity=".42"><ellipse cx="230" cy="70" rx="150" ry="100" fill="#DCEBF8"/></g></svg>
+    <svg class="wash" width="390" height="220" viewBox="0 0 390 220"><g filter="url(#wc)" opacity=".42"><ellipse cx="230" cy="70" rx="150" ry="100" fill="#DCEBF8"/><ellipse cx="185" cy="100" rx="88" ry="58" fill="#D0E4F5" opacity=".7"/></g><g filter="url(#wc2)" opacity=".32"><ellipse cx="70" cy="60" rx="52" ry="34" fill="#C7DEF1"/><ellipse cx="335" cy="150" rx="40" ry="24" fill="#DFEDE3"/></g></svg>
     <div class="status"><span id="clock3">--:--</span><span>统计</span></div>
     <div class="bodyz">
       <div id="s-back"></div>
@@ -298,7 +302,7 @@ button{font-family:inherit}
 
   <!-- 我的 -->
   <section class="view" id="v-me">
-    <svg class="wash" width="390" height="200" viewBox="0 0 390 200"><g filter="url(#wc)" opacity=".4"><ellipse cx="90" cy="60" rx="150" ry="95" fill="#DCEBF8"/></g></svg>
+    <svg class="wash" width="390" height="200" viewBox="0 0 390 200"><g filter="url(#wc)" opacity=".4"><ellipse cx="90" cy="60" rx="150" ry="95" fill="#DCEBF8"/><ellipse cx="140" cy="92" rx="88" ry="58" fill="#D0E4F5" opacity=".75"/></g><g filter="url(#wc2)" opacity=".34"><ellipse cx="312" cy="48" rx="68" ry="44" fill="#C7DEF1"/><ellipse cx="255" cy="115" rx="44" ry="26" fill="#E4EFF9"/><ellipse cx="40" cy="132" rx="38" ry="22" fill="#F0E7D8"/></g></svg>
     <div class="status"><span id="clock4">--:--</span><span>我的</span></div>
     <div class="bodyz">
       <div class="me-top">
@@ -306,12 +310,11 @@ button{font-family:inherit}
         <div><p>阿发的账本</p><span id="m-streak">已连续记账 0 天</span></div>
       </div>
       <div class="sum">
-        <div><p>本月预算</p><b id="m-budget">0</b></div>
+        <div class="tap" onclick="openBudget()"><p>本月预算</p><b id="m-budget">0</b></div>
         <div><p>日均支出</p><b id="m-avg">0</b></div>
-        <div><p>总余额</p><b id="m-balance">0</b></div>
+        <div class="tap" onclick="openStartBalance()"><p>总余额</p><b id="m-balance">0</b></div>
       </div>
       <div class="list">
-        <div class="row-l" onclick="openBudget()"><div class="ico" style="width:32px;height:32px;border-radius:11px;background:#E7F0F8;color:#5C87B8">预</div>预算与提醒<em id="m-budget-em">未设置</em></div>
         <div class="row-l" onclick="openCats()"><div class="ico" style="width:32px;height:32px;border-radius:11px;background:#EDEBF7;color:#736FAE">类</div>分类管理<em id="m-cat-em">0 个</em></div>
         <div class="row-l" onclick="openBackup()"><div class="ico" style="width:32px;height:32px;border-radius:11px;background:#E6F2EC;color:#4E9376">备</div>备份与导出<em>JSON / CSV</em></div>
         <div class="row-l" onclick="openSettings()"><div class="ico" style="width:32px;height:32px;border-radius:11px;background:#F1EFE9;color:#8A8B84">设</div>设置<em></em></div>
@@ -321,7 +324,7 @@ button{font-family:inherit}
 
   <!-- 记一笔（独立全屏页） -->
   <section class="view" id="v-record" style="padding-bottom:24px">
-    <svg class="wash" width="390" height="200" viewBox="0 0 390 200"><g filter="url(#wc)" opacity=".45"><ellipse cx="200" cy="60" rx="150" ry="90" fill="#DCEBF8"/></g></svg>
+    <svg class="wash" width="390" height="200" viewBox="0 0 390 200"><g filter="url(#wc)" opacity=".45"><ellipse cx="200" cy="60" rx="150" ry="90" fill="#DCEBF8"/><ellipse cx="155" cy="90" rx="85" ry="55" fill="#D0E4F5" opacity=".7"/></g><g filter="url(#wc2)" opacity=".32"><ellipse cx="330" cy="55" rx="55" ry="34" fill="#C7DEF1"/><ellipse cx="55" cy="125" rx="36" ry="22" fill="#F0E7D8"/></g></svg>
     <div class="status"><span id="clock5">--:--</span><span id="r-title">记一笔</span></div>
     <div class="bodyz">
       <div class="rec-top">
@@ -743,7 +746,6 @@ function renderMe(){
   document.getElementById('m-budget').textContent=limit?fmt0(limit):'未设置';
   document.getElementById('m-avg').textContent=fmt0(Math.round(out/passed));
   document.getElementById('m-balance').textContent=fmt0(bal);
-  document.getElementById('m-budget-em').textContent=limit?`¥${fmt0(limit)}`:'未设置';
   document.getElementById('m-cat-em').textContent=`${parents('expense').length} 个`;
 }
 
@@ -1062,7 +1064,7 @@ function openBackup(){
     <div class="btn" onclick="expJSON()">导出 JSON 备份</div>
     <div class="btn ghost" onclick="expCSV()">导出 CSV（Excel 可打开）</div>
     <div class="btn ghost" onclick="document.getElementById('imp').click()">导入备份恢复</div>
-    <input type="file" id="imp" accept="application/json" style="display:none" onchange="impJSON(this)">`);
+    <input type="file" id="imp" accept=".json,application/json" style="display:none" onchange="impJSON(this)">`);
 }
 function dl(name,text,type){
   const b=new Blob([type==='csv'?'\ufeff'+text:text],{type:type==='csv'?'text/csv;charset=utf-8':'application/json'});
@@ -1083,22 +1085,24 @@ function expCSV(){
   toast('已导出 CSV');
 }
 function impJSON(input){
-  const f=input.files[0];if(!f)return;
+  const f=input.files&&input.files[0];
+  if(!f){toast('没有读到文件，请重试');input.value='';return;}   // 部分手机 MIME 不匹配会静默给空文件列表
   const rd=new FileReader();
+  rd.onerror=()=>{toast('文件读取失败，请重试');};
   rd.onload=async()=>{
     try{
       const d=JSON.parse(rd.result);
-      if(!d||!Array.isArray(d.records)||!Array.isArray(d.categories))throw 0;
+      if(!d||!Array.isArray(d.records)||!Array.isArray(d.categories))throw new Error('不是轻账备份文件');
       await db.transaction('rw',db.records,db.categories,db.budgets,db.meta,async()=>{
         await db.records.clear();await db.categories.clear();await db.budgets.clear();await db.meta.clear();
         await db.records.bulkAdd(d.records);
         await db.categories.bulkAdd(d.categories);
         await db.budgets.bulkAdd(d.budgets||[]);
-        await db.meta.bulkAdd(d.meta||[]);
+        await db.meta.bulkAdd((d.meta||[]).map(m=>({id:m.id,value:m.value})));
       });
       await store.refresh();notify();
       closeSheet();toast(`已恢复 ${d.records.length} 条记录`);
-    }catch(e){toast('文件格式不对');}
+    }catch(e){console.error('[import]',e);toast('导入失败：'+(e&&e.message?e.message:'文件格式不对'));}
   };
   rd.readAsText(f);input.value='';
 }
@@ -1109,6 +1113,13 @@ function openSettings(){
     <div class="btn" onclick="saveStartBalance()">保存起始余额</div>
     <div class="btn danger" onclick="clearAll()">清空全部数据（保留默认分类）</div>
     <div class="btn ghost" onclick="closeSheet()">关闭</div>`);
+}
+/* 点「总余额」直接弹出的设置（与设置页共用 saveStartBalance） */
+function openStartBalance(){
+  const sb=getMeta('startBalance')||0;
+  sheet(`<h4>总余额</h4><p class="desc">总余额 = 起始余额 + 累计收支（含大额），填 0 即从零起算</p>
+    <div class="field"><label>起始余额（元）</label><input type="number" inputmode="decimal" id="sb" placeholder="0" value="${sb?sb/100:''}"></div>
+    <div class="btn" onclick="saveStartBalance()">保存</div>`);
 }
 /* 起始余额（分）：总余额 = 起始余额 + 累计收支 */
 async function saveStartBalance(){
