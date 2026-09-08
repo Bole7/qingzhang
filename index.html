@@ -201,6 +201,16 @@ button{font-family:inherit}
 .toast.on{opacity:1}
 .brow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:.5px solid #F0F5FA;font-size:13px}
 .brow input{width:76px;border:0;outline:0;font-size:13.5px;font-family:inherit;color:var(--ink);background:#EDF3F9;border-radius:10px;padding:7px 10px;text-align:right}
+/* 开关（复用于各 Sheet 与记一笔页） */
+.switch{width:42px;height:24px;border-radius:14px;background:#DCE5EE;position:relative;cursor:pointer;transition:background .2s;flex:0 0 auto}
+.switch i{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left .2s}
+.switch.on{background:var(--blue)}
+.switch.on i{left:21px}
+/* 记一笔页「计入本月统计」开关行 */
+.rec-toggle{margin:10px 22px 0;display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-radius:16px;background:rgba(255,255,255,.8);border:.5px solid var(--line);font-size:13px;cursor:pointer}
+.rec-toggle small{display:block;font-size:11px;color:var(--ink3);margin-top:2px}
+/* 明细条目「大额」小标（不计入本月统计的记录） */
+.tagx{font-style:normal;font-size:10px;color:var(--ink3);background:#EDF3F9;border-radius:8px;padding:2px 6px;margin-left:6px;vertical-align:1px}
 </style>
 </head>
 <body>
@@ -298,7 +308,7 @@ button{font-family:inherit}
       <div class="sum">
         <div><p>本月预算</p><b id="m-budget">0</b></div>
         <div><p>日均支出</p><b id="m-avg">0</b></div>
-        <div><p>记账笔数</p><b id="m-count">0</b></div>
+        <div><p>总余额</p><b id="m-balance">0</b></div>
       </div>
       <div class="list">
         <div class="row-l" onclick="openBudget()"><div class="ico" style="width:32px;height:32px;border-radius:11px;background:#E7F0F8;color:#5C87B8">预</div>预算与提醒<em id="m-budget-em">未设置</em></div>
@@ -323,6 +333,10 @@ button{font-family:inherit}
       </div>
       <div class="rec-amount"><span>¥</span><span id="r-amt">0</span></div>
       <div class="rec-note" id="r-note" onclick="editNote()">备注：点这里写点什么</div>
+      <div class="rec-toggle" onclick="toggleInMonth()">
+        <div>计入本月统计<small id="r-imhint">大额支出可关闭，不碰生活费预算与统计</small></div>
+        <div class="switch on" id="r-inmonth"><i></i></div>
+      </div>
       <div class="cats" id="r-cats"></div>
       <div class="subwrap">
         <div class="subwrap-l" id="r-sublabel">二级分类</div>
@@ -410,17 +424,24 @@ db.version(1).stores({
   categories:'id, type, parentId',     // 分类：parentId 为 null 表示一级；archived 软删除
   budgets:'id, month'                  // 预算：categoryId 为 null 表示总预算
 });
+/* v2：新增 meta 表（起始余额等键值设置），旧库自动升级，已有数据不受影响 */
+db.version(2).stores({
+  records:'id, date, categoryId',
+  categories:'id, type, parentId',
+  budgets:'id, month',
+  meta:'id'
+});
 
 /* ---------- 集中 store + 订阅 ---------- */
 const store={
-  state:{records:[],categories:[],budgets:[]},
+  state:{records:[],categories:[],budgets:[],meta:[]},
   subs:new Set(),
   subscribe(fn){this.subs.add(fn);},
   async refresh(){
-    const [records,categories,budgets]=await Promise.all([
-      db.records.toArray(),db.categories.toArray(),db.budgets.toArray()
+    const [records,categories,budgets,meta]=await Promise.all([
+      db.records.toArray(),db.categories.toArray(),db.budgets.toArray(),db.meta.toArray()
     ]);
-    Object.assign(this.state,{records,categories,budgets});
+    Object.assign(this.state,{records,categories,budgets,meta});
     /* 逐个隔离调用：任一视图渲染抛错都不影响其他视图和后续写流程（否则界面表现为"没反应"） */
     this.subs.forEach(fn=>{try{fn(this.state);}catch(e){console.error('[render]',e);}});
   }
@@ -446,6 +467,11 @@ function icoHtml(c,cls){
 /* ---------- 统计计算（全部以「分」为单位） ---------- */
 const sumBy=(rs,t)=>rs.filter(r=>r.type===t).reduce((a,b)=>a+b.amount,0);
 const monthRecords=m=>store.state.records.filter(r=>ym(r.date)===m);
+/* 计入本月统计口径：大额特殊支出可标记 inMonth=false；旧记录无此字段，默认计入 */
+const counted=r=>r.inMonth!==false;
+/* meta 键值读取/写入（起始余额等） */
+const getMeta=k=>{const m=store.state.meta.find(x=>x.id===k);return m?m.value:0;};
+async function setMeta(k,v){await db.meta.put({id:k,value:v});}
 /* 连续记账天数：今天未记不算断，从昨天往前数 */
 function streak(){
   let d=new Date(),n=0;
@@ -457,9 +483,9 @@ function streak(){
 /* 环比：本月截至今天 vs 上月同期；上月无数据返回 null（不显示胶囊） */
 function monthCompare(){
   const m=ym(TODAY), day=new Date().getDate();
-  const cur=monthRecords(m).filter(r=>r.type==='expense'&&pd(r.date).getDate()<=day).reduce((a,b)=>a+b.amount,0);
+  const cur=monthRecords(m).filter(r=>counted(r)&&r.type==='expense'&&pd(r.date).getDate()<=day).reduce((a,b)=>a+b.amount,0);
   const pm=dateKey(addDay(pd(m+'-01'),-1)).slice(0,7);
-  const prev=monthRecords(pm).filter(r=>r.type==='expense'&&pd(r.date).getDate()<=day).reduce((a,b)=>a+b.amount,0);
+  const prev=monthRecords(pm).filter(r=>counted(r)&&r.type==='expense'&&pd(r.date).getDate()<=day).reduce((a,b)=>a+b.amount,0);
   if(prev<=0) return null;
   return cur-prev;
 }
@@ -483,8 +509,8 @@ async function writeBudget(m,categoryId,limit){
 function renderHome(){
   const d=new Date();
   document.getElementById('h-date').textContent=`${d.getMonth()+1}月${d.getDate()}日 · 星期${WEEK[d.getDay()]}`;
-  const todayOut=sumBy(store.state.records.filter(r=>r.date===TODAY),'expense');
-  const monthOut=sumBy(monthRecords(ym(TODAY)),'expense');
+  const todayOut=sumBy(store.state.records.filter(r=>r.date===TODAY&&counted(r)),'expense');
+  const monthOut=sumBy(monthRecords(ym(TODAY)).filter(counted),'expense');
   document.getElementById('h-today').textContent=fmt(todayOut);
   document.getElementById('h-month').textContent=fmt(monthOut);
 
@@ -518,7 +544,7 @@ function renderHome(){
     : `<div class="empty"><div class="big">◌</div>今天还没有记账<br>点下面这行，写下第一笔</div>`;
   bindItems('h-list');
 }
-/* 明细条：主标题=备注（无则回退分类名）；副标题=一级 · 二级；支出 ink、收入 green */
+/* 明细条：主标题=备注（无则回退分类名）；副标题=一级 · 二级；支出 ink、收入 green；不计入本月的加「大额」标 */
 function itemHtml(r){
   const c=catById(r.categoryId), p=parentOf(c);
   const title=r.note||(c?c.name:'未分类');
@@ -526,7 +552,7 @@ function itemHtml(r){
   const sign=r.type==='expense'?'-':'+';
   return `<div class="item" data-id="${r.id}">
     ${icoHtml(p)}
-    <div class="t"><p>${esc(title)}</p><span>${esc(catPath)}</span></div>
+    <div class="t"><p>${esc(title)}${counted(r)?'':'<i class="tagx">大额</i>'}</p><span>${esc(catPath)}</span></div>
     <div class="v ${r.type==='expense'?'minus':'plus'}">${sign}${fmt(r.amount)}</div>
   </div>`;
 }
@@ -543,8 +569,9 @@ let curMonth=ym(TODAY);
 function renderDetail(){
   const d=pd(curMonth+'-01');
   document.getElementById('d-title').textContent=`${d.getMonth()+1} 月`;
-  const rs=monthRecords(curMonth);
-  const inc=sumBy(rs,'income'), out=sumBy(rs,'expense');
+  const rs=monthRecords(curMonth);                 // 列表显示全部（含大额，打标）
+  const cs=rs.filter(counted);                     // 汇总只按「计入本月统计」口径
+  const inc=sumBy(cs,'income'), out=sumBy(cs,'expense');
   document.getElementById('d-in').textContent=fmt0(inc);
   document.getElementById('d-out').textContent=fmt(out);
   document.getElementById('d-net').textContent=fmt0(inc-out);
@@ -555,10 +582,12 @@ function renderDetail(){
   const days=Object.keys(byDay).sort((a,b)=>b.localeCompare(a));
   document.getElementById('d-list').innerHTML = days.length ? days.map(day=>{
     const arr=byDay[day].sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
-    const o=sumBy(arr,'expense'), i=sumBy(arr,'income');
+    const countedArr=arr.filter(counted);
+    const o=sumBy(countedArr,'expense'), i=sumBy(countedArr,'income');
+    const ex=sumBy(arr.filter(r=>!counted(r)),'expense');   // 当日不计入的大额支出
     const dd=pd(day);
     const label=day===TODAY?'今天':(day===dateKey(addDay(new Date(),-1))?'昨天':'');
-    const right=i>0?`收 ${fmt0(i)}`:`支 ${fmt(o)}`;
+    const right=(i>0?`收 ${fmt0(i)}`:`支 ${fmt(o)}`)+(ex>0?`<span style="font-size:10px;color:var(--ink3)"> 大额${fmt0(ex)}</span>`:'');
     return `<div class="day-head" id="d-${day}"><span>${dd.getMonth()+1}月${dd.getDate()}日 ${label}</span><span style="display:flex;align-items:center;gap:8px"><span>${right}</span><button class="dayadd" title="在这一天记一笔" onclick="addOnDay('${day}')">＋</button></span></div>`
       + arr.map(r=>itemHtml(r)).join('');
   }).join('') : `<div class="empty"><div class="big">◌</div>这个月还没有记录<br>点中间的 ＋ 记一笔</div>`;
@@ -582,7 +611,7 @@ function renderCal(){
   for(let i=0;i<42;i++){
     const d=addDay(start,i), key=dateKey(d);
     const off=ym(key)!==curMonth;
-    const o=sumBy(store.state.records.filter(r=>r.date===key),'expense');
+    const o=sumBy(store.state.records.filter(r=>r.date===key&&counted(r)),'expense');
     const cls=['cell',off?'dim':'',key===TODAY?'today':''].join(' ');
     html+=`<div class="${cls}" onclick="pickDay('${key}',this)"><span>${d.getDate()}</span><span class="m">${o>0?fmt0(o):''}</span></div>`;
   }
@@ -629,7 +658,7 @@ function group(rs,fn){
   return Object.entries(m).sort((a,b)=>b[1]-a[1]);
 }
 function renderStat(){
-  const rs=monthRecords(curMonth).filter(r=>r.type==='expense');
+  const rs=monthRecords(curMonth).filter(r=>counted(r)&&r.type==='expense');
   let data,centerLabel,total;
   if(drill){
     /* 下钻：该一级的二级构成 */
@@ -679,7 +708,7 @@ function renderStat(){
   /* 近 6 个月趋势：当前月主色 #7FA8D4，其余 #C9DFF2 */
   const months=[];
   for(let i=5;i>=0;i--){const d=pd(curMonth+'-01');d.setMonth(d.getMonth()-i);months.push(dateKey(d).slice(0,7));}
-  const vals=months.map(mm=>sumBy(monthRecords(mm),'expense')/100);
+  const vals=months.map(mm=>sumBy(monthRecords(mm).filter(counted),'expense')/100);
   const bcfg={
     type:'bar',
     data:{labels:months.map(mm=>pd(mm+'-01').getMonth()+1+'月'),
@@ -705,13 +734,15 @@ function onLegend(name){
  * ================================================================== */
 function renderMe(){
   document.getElementById('m-streak').textContent=`已连续记账 ${streak()} 天`;
-  const m=ym(TODAY), rs=monthRecords(m), out=sumBy(rs,'expense');
+  const m=ym(TODAY), out=sumBy(monthRecords(m).filter(counted),'expense');
   /* 日均支出（已过天数口径）：本月支出 ÷ 今天日期 */
   const passed=new Date().getDate();
   const limit=resolveBudget(m,null);
+  /* 总余额 = 起始余额 + 累计（全部收入 − 全部支出），含大额、不计口径 */
+  const bal=(getMeta('startBalance')||0)+sumBy(store.state.records,'income')-sumBy(store.state.records,'expense');
   document.getElementById('m-budget').textContent=limit?fmt0(limit):'未设置';
   document.getElementById('m-avg').textContent=fmt0(Math.round(out/passed));
-  document.getElementById('m-count').textContent=store.state.records.length;
+  document.getElementById('m-balance').textContent=fmt0(bal);
   document.getElementById('m-budget-em').textContent=limit?`¥${fmt0(limit)}`:'未设置';
   document.getElementById('m-cat-em').textContent=`${parents('expense').length} 个`;
 }
@@ -719,7 +750,7 @@ function renderMe(){
 /* ==================================================================
  * 记一笔（独立全屏页，自定义数字键盘，不唤起系统键盘）
  * ================================================================== */
-let R={id:null,type:'expense',amt:'0',date:TODAY,time:timeKey(),note:'',c1:'',c2:''};
+let R={id:null,type:'expense',amt:'0',date:TODAY,time:timeKey(),note:'',c1:'',c2:'',inMonth:true};
 let FROM='v-home',FROM_I=0;
 function openRecord(id,presetDate){
   const on=document.querySelector('.view.on');
@@ -727,12 +758,12 @@ function openRecord(id,presetDate){
   const r=id?store.state.records.find(x=>x.id===id):null;
   if(r){
     const c=catById(r.categoryId), p=parentOf(c);
-    R={id:r.id,type:r.type,amt:(r.amount/100).toString(),date:r.date,time:r.time,note:r.note||'',c1:p?p.id:'',c2:r.categoryId};
+    R={id:r.id,type:r.type,amt:(r.amount/100).toString(),date:r.date,time:r.time,note:r.note||'',c1:p?p.id:'',c2:r.categoryId,inMonth:r.inMonth!==false};
     document.getElementById('r-title').textContent='编辑';
     document.getElementById('r-cancel').textContent='删除这一笔';
   }else{
     const lp=parents('expense')[0], ls=lp?subsOf(lp.id):[];
-    R={id:null,type:'expense',amt:'0',date:presetDate||TODAY,time:timeKey(),note:'',c1:lp?lp.id:'',c2:ls[0]?ls[0].id:''};
+    R={id:null,type:'expense',amt:'0',date:presetDate||TODAY,time:timeKey(),note:'',c1:lp?lp.id:'',c2:ls[0]?ls[0].id:'',inMonth:true};
     document.getElementById('r-title').textContent='记一笔';
     document.getElementById('r-cancel').textContent='取消';
   }
@@ -755,6 +786,8 @@ function setType(t){
 function renderRecord(){
   const lp=parents(R.type);
   document.getElementById('r-amt').textContent=R.amt;
+  document.getElementById('r-inmonth').classList.toggle('on',R.inMonth);
+  document.getElementById('r-imhint').textContent=R.inMonth?'大额支出可关闭，不碰生活费预算与统计':'不计入本月统计、预算与趋势，只计入总余额';
   const n=document.getElementById('r-note');
   n.textContent=R.note?`备注：${R.note}`:'备注：点这里写点什么';
   n.classList.toggle('has',!!R.note);
@@ -777,6 +810,8 @@ function updateSaveBtn(){
 }
 function pickC1(id){R.c1=id;const s=subsOf(id);R.c2=s[0]?s[0].id:'';renderRecord();}  /* 切一级自动选中第一个二级 */
 function pickC2(id){R.c2=id;renderRecord();}
+/* 「计入本月统计」开关：关闭 = 大额特殊支出，不碰生活费口径，只计入总余额 */
+function toggleInMonth(){R.inMonth=!R.inMonth;renderRecord();}
 function buildKeys(){
   const ks=['1','2','3','4','5','6','7','8','9','.','0','del'];
   document.getElementById('r-keys').innerHTML=ks.map(k=>{
@@ -831,7 +866,7 @@ function renderDateSheet(){
   for(let i=0;i<42;i++){
     const d=addDay(start,i),key=dateKey(d);
     const off=ym(key)!==pickMonth;
-    const o=sumBy(store.state.records.filter(r=>r.date===key),'expense');
+    const o=sumBy(store.state.records.filter(r=>r.date===key&&counted(r)),'expense');
     const cls=['cell',off?'dim':'',key===TODAY?'today':'',key===pickDate?'on':''].join(' ');
     cells+=`<div class="${cls}" onclick="pickCell('${key}')"><span>${d.getDate()}</span><span class="m">${o>0?fmt0(o):''}</span></div>`;
   }
@@ -859,10 +894,10 @@ async function saveRecord(){
   if(!R.c2){toast('选一个二级分类');return;}
   const amount=Math.round(yuan*100);          // 元 → 分，入库前转换
   if(R.id){
-    await db.records.update(R.id,{type:R.type,amount,categoryId:R.c2,date:R.date,time:R.time,note:R.note});
+    await db.records.update(R.id,{type:R.type,amount,categoryId:R.c2,date:R.date,time:R.time,note:R.note,inMonth:R.inMonth});
     toast('已更新');
   }else{
-    await db.records.add({id:uid(),type:R.type,amount,categoryId:R.c2,date:R.date,time:R.time,note:R.note,createdAt:Date.now()});
+    await db.records.add({id:uid(),type:R.type,amount,categoryId:R.c2,date:R.date,time:R.time,note:R.note,inMonth:R.inMonth,createdAt:Date.now()});
     toast('记好了');
   }
   await store.refresh();notify();
@@ -906,7 +941,7 @@ function openBudget(){
   const total=resolveBudget(m,null);
   const rows=parents('expense').map(c=>{
     const lim=resolveBudget(m,c.id);
-    const spent=monthRecords(m).filter(r=>{const cc=catById(r.categoryId);return r.type==='expense'&&parentOf(cc)&&parentOf(cc).id===c.id;}).reduce((a,b)=>a+b.amount,0);
+    const spent=monthRecords(m).filter(r=>{const cc=catById(r.categoryId);return counted(r)&&r.type==='expense'&&parentOf(cc)&&parentOf(cc).id===c.id;}).reduce((a,b)=>a+b.amount,0);
     const pct=lim?Math.min(100,spent/lim*100):0;
     const color=!lim?'var(--blue)':(pct>100?'var(--red)':(pct>=80?'var(--coral)':'var(--blue)'));
     return `<div class="brow">${icoHtml(c)}<div style="flex:1;min-width:0">
@@ -1039,10 +1074,10 @@ function expJSON(){
   toast('已导出 JSON');
 }
 function expCSV(){
-  const rows=[['日期','类型','一级分类','二级分类','备注','金额(元)']];
+  const rows=[['日期','类型','一级分类','二级分类','备注','金额(元)','计入本月统计']];
   store.state.records.slice().sort((a,b)=>(a.date+(a.createdAt||'')).localeCompare(b.date+(b.createdAt||''))).forEach(r=>{
     const c=catById(r.categoryId), p=parentOf(c);
-    rows.push([r.date,r.type==='expense'?'支出':'收入',p?p.name:'',c?c.name:'',r.note||'',(r.amount/100).toFixed(2)]);
+    rows.push([r.date,r.type==='expense'?'支出':'收入',p?p.name:'',c?c.name:'',r.note||'',(r.amount/100).toFixed(2),counted(r)?'是':'否']);
   });
   dl(`轻账账单-${TODAY}.csv`,rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n'),'csv');
   toast('已导出 CSV');
@@ -1054,11 +1089,12 @@ function impJSON(input){
     try{
       const d=JSON.parse(rd.result);
       if(!d||!Array.isArray(d.records)||!Array.isArray(d.categories))throw 0;
-      await db.transaction('rw',db.records,db.categories,db.budgets,async()=>{
-        await db.records.clear();await db.categories.clear();await db.budgets.clear();
+      await db.transaction('rw',db.records,db.categories,db.budgets,db.meta,async()=>{
+        await db.records.clear();await db.categories.clear();await db.budgets.clear();await db.meta.clear();
         await db.records.bulkAdd(d.records);
         await db.categories.bulkAdd(d.categories);
         await db.budgets.bulkAdd(d.budgets||[]);
+        await db.meta.bulkAdd(d.meta||[]);
       });
       await store.refresh();notify();
       closeSheet();toast(`已恢复 ${d.records.length} 条记录`);
@@ -1067,9 +1103,19 @@ function impJSON(input){
   rd.readAsText(f);input.value='';
 }
 function openSettings(){
+  const sb=getMeta('startBalance')||0;
   sheet(`<h4>设置</h4><p class="desc">轻账 · 本地记账，数据只在本机 IndexedDB</p>
+    <div class="field"><label>起始余额</label><input type="number" inputmode="decimal" id="sb" placeholder="0" value="${sb?sb/100:''}"></div>
+    <div class="btn" onclick="saveStartBalance()">保存起始余额</div>
     <div class="btn danger" onclick="clearAll()">清空全部数据（保留默认分类）</div>
     <div class="btn ghost" onclick="closeSheet()">关闭</div>`);
+}
+/* 起始余额（分）：总余额 = 起始余额 + 累计收支 */
+async function saveStartBalance(){
+  const v=Math.round(parseFloat(document.getElementById('sb').value||'0')*100);
+  await setMeta('startBalance',v>0?v:0);
+  await store.refresh();notify();
+  closeSheet();toast('起始余额已保存');
 }
 async function clearAll(){
   if(!confirm('确定清空全部记账数据？此操作不可恢复，建议先导出备份。'))return;
