@@ -103,6 +103,16 @@ button{font-family:inherit}
 .keys .fn{font-size:13px;color:var(--ink2)}
 .save{margin:2px 22px 8px;padding:15px;border-radius:16px;background:var(--blue);color:#fff;text-align:center;font-size:14.5px;cursor:pointer;box-shadow:0 10px 22px rgba(127,168,212,.35)}
 .save.off{background:#C8D6E3;box-shadow:none;cursor:not-allowed}
+/* 日期胶囊入口（记一笔页） */
+.datepill{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:14px;background:rgba(255,255,255,.85);border:.5px solid var(--line);font-size:12px;color:var(--ink2);cursor:pointer}
+.datepill.past{color:var(--blue-d);border-color:rgba(92,135,184,.45);background:#fff}
+.datepill svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round}
+/* 日期选择 Sheet 内的快捷 chips */
+.qchip{padding:7px 14px;border-radius:14px;background:#EDF3F9;font-size:12.5px;color:var(--ink2);cursor:pointer;border:.5px solid transparent;display:inline-block}
+.qchip.on{background:#fff;color:var(--blue-d);border-color:rgba(92,135,184,.45)}
+.cal-mini .cell{height:40px}
+/* 明细日分组头的「在这一天记一笔」小按钮 */
+.dayadd{width:20px;height:20px;border-radius:8px;border:0;background:var(--blue-l);color:var(--blue-d);font-size:13px;cursor:pointer;line-height:1;padding:0}
 
 /* 明细 */
 .mtitle{padding:6px 22px 0;font-size:19px;display:flex;align-items:center;gap:10px;cursor:pointer}
@@ -284,7 +294,7 @@ button{font-family:inherit}
           <button id="seg-e" class="on" onclick="setType('expense')">支出</button>
           <button id="seg-i" onclick="setType('income')">收入</button>
         </div>
-        <span style="font-size:12px;color:var(--ink3);cursor:pointer" onclick="openDate()"><span id="r-datelabel">今天</span> ▾</span>
+        <span class="datepill" id="r-datepill" onclick="openDate()"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="16" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg><span id="r-datelabel">今天</span></span>
       </div>
       <div class="rec-amount"><span>¥</span><span id="r-amt">0</span></div>
       <div class="rec-note" id="r-note" onclick="editNote()">备注：点这里写点什么</div>
@@ -475,21 +485,22 @@ function renderHome(){
       <div class="bar-note">${note}</div></div>`;
   }
 
-  /* 只显示今天的记录，按时间正序 */
-  const list=store.state.records.filter(r=>r.date===TODAY).sort((a,b)=>a.time.localeCompare(b.time));
+  /* 只显示今天的记录，按记账先后正序 */
+  const list=store.state.records.filter(r=>r.date===TODAY).sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
   document.getElementById('h-list').innerHTML = list.length
     ? list.map(r=>itemHtml(r)).join('')
     : `<div class="empty"><div class="big">◌</div>今天还没有记账<br>点下面这行，写下第一笔</div>`;
   bindItems('h-list');
 }
-/* 明细条：主标题=备注（无则回退分类名）；副标题=分类 · 时间；支出 ink、收入 green */
+/* 明细条：主标题=备注（无则回退分类名）；副标题=一级 · 二级；支出 ink、收入 green */
 function itemHtml(r){
   const c=catById(r.categoryId), p=parentOf(c);
   const title=r.note||(c?c.name:'未分类');
+  const catPath=(p?p.name:'未分类')+(c&&c.parentId?' · '+c.name:'');
   const sign=r.type==='expense'?'-':'+';
   return `<div class="item" data-id="${r.id}">
     ${icoHtml(p)}
-    <div class="t"><p>${esc(title)}</p><span>${esc(p?p.name:'')} · ${esc(r.time)}</span></div>
+    <div class="t"><p>${esc(title)}</p><span>${esc(catPath)}</span></div>
     <div class="v ${r.type==='expense'?'minus':'plus'}">${sign}${fmt(r.amount)}</div>
   </div>`;
 }
@@ -512,17 +523,17 @@ function renderDetail(){
   document.getElementById('d-out').textContent=fmt(out);
   document.getElementById('d-net').textContent=fmt0(inc-out);
 
-  /* 按日分组，日倒序、日内按时间正序 */
+  /* 按日分组，日倒序、日内按记账先后正序 */
   const byDay={};
   rs.forEach(r=>{(byDay[r.date]=byDay[r.date]||[]).push(r);});
   const days=Object.keys(byDay).sort((a,b)=>b.localeCompare(a));
   document.getElementById('d-list').innerHTML = days.length ? days.map(day=>{
-    const arr=byDay[day].sort((a,b)=>a.time.localeCompare(b.time));
+    const arr=byDay[day].sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
     const o=sumBy(arr,'expense'), i=sumBy(arr,'income');
     const dd=pd(day);
     const label=day===TODAY?'今天':(day===dateKey(addDay(new Date(),-1))?'昨天':'');
     const right=i>0?`收 ${fmt0(i)}`:`支 ${fmt(o)}`;
-    return `<div class="day-head" id="d-${day}"><span>${dd.getMonth()+1}月${dd.getDate()}日 ${label}</span><span>${right}</span></div>`
+    return `<div class="day-head" id="d-${day}"><span>${dd.getMonth()+1}月${dd.getDate()}日 ${label}</span><span style="display:flex;align-items:center;gap:8px"><span>${right}</span><button class="dayadd" title="在这一天记一笔" onclick="addOnDay('${day}')">＋</button></span></div>`
       + arr.map(r=>itemHtml(r)).join('');
   }).join('') : `<div class="empty"><div class="big">◌</div>这个月还没有记录<br>点中间的 ＋ 记一笔</div>`;
   bindItems('d-list');
@@ -557,8 +568,8 @@ function pickDay(day,el){
   setTimeout(()=>{
     document.getElementById('cal').classList.remove('on');
     const t=document.getElementById('d-'+day);
-    if(t) t.scrollIntoView({behavior:'smooth',block:'start'});
-    else toast('这一天没有记录');
+    if(t){t.scrollIntoView({behavior:'smooth',block:'start'});}
+    else{openRecord(null,day);toast('补记 '+day.slice(5).replace('-','月')+'日 的账');}
   },160);
 }
 /* 切月：明细 / 统计 / 预算全部跟随 curMonth */
@@ -684,7 +695,7 @@ function renderMe(){
  * ================================================================== */
 let R={id:null,type:'expense',amt:'0',date:TODAY,time:timeKey(),note:'',c1:'',c2:''};
 let FROM='v-home',FROM_I=0;
-function openRecord(id){
+function openRecord(id,presetDate){
   const on=document.querySelector('.view.on');
   if(on&&on.id!=='v-record'){FROM=on.id;const t={ 'v-home':0,'v-detail':1,'v-stat':2,'v-me':3 };FROM_I=t[on.id]||0;}
   const r=id?store.state.records.find(x=>x.id===id):null;
@@ -695,13 +706,13 @@ function openRecord(id){
     document.getElementById('r-cancel').textContent='删除这一笔';
   }else{
     const lp=parents('expense')[0], ls=lp?subsOf(lp.id):[];
-    R={id:null,type:'expense',amt:'0',date:TODAY,time:timeKey(),note:'',c1:lp?lp.id:'',c2:ls[0]?ls[0].id:''};
+    R={id:null,type:'expense',amt:'0',date:presetDate||TODAY,time:timeKey(),note:'',c1:lp?lp.id:'',c2:ls[0]?ls[0].id:''};
     document.getElementById('r-title').textContent='记一笔';
     document.getElementById('r-cancel').textContent='取消';
   }
   document.getElementById('seg-e').classList.toggle('on',R.type==='expense');
   document.getElementById('seg-i').classList.toggle('on',R.type==='income');
-  document.getElementById('r-datelabel').textContent=labelOf(R.date);
+  updateDatePill();
   renderRecord();
   go('v-record',null);
 }
@@ -722,7 +733,8 @@ function renderRecord(){
   n.textContent=R.note?`备注：${R.note}`:'备注：点这里写点什么';
   n.classList.toggle('has',!!R.note);
   document.getElementById('r-cats').innerHTML=lp.map(c=>
-    `<button class="cat ${c.id===R.c1?'on':''}" onclick="pickC1('${c.id}')">${icoHtml(c)}<span>${esc(c.name)}</span></button>`).join('');
+    `<button class="cat ${c.id===R.c1?'on':''}" onclick="pickC1('${c.id}')">${icoHtml(c)}<span>${esc(c.name)}</span></button>`).join('')
+    +`<button class="cat" onclick="addCatQuick()"><div class="ico" style="background:rgba(217,232,246,.5);color:var(--blue-d);border:1px dashed rgba(127,168,212,.55);font-size:18px">＋</div><span>添加</span></button>`;
   const cur=lp.find(c=>c.id===R.c1)||lp[0];
   const subs=cur?subsOf(cur.id):[];
   document.getElementById('r-sublabel').textContent=cur?`${cur.name} · 二级分类`:'请先创建分类';
@@ -766,18 +778,54 @@ function editNote(){
     <div class="btn" onclick="confirmNote()">好了</div>`);
 }
 function confirmNote(){R.note=document.getElementById('ni').value.trim();closeSheet();renderRecord();}
-function openDate(){
-  sheet(`<h4>日期与时间</h4><p class="desc">可以补记前几天忘了记的账</p>
-    <div class="field"><label>日期</label><input type="date" id="di" value="${R.date}"></div>
-    <div class="field"><label>时间</label><input type="time" id="ti" value="${R.time}"></div>
-    <div class="btn" onclick="confirmDate()">好了</div>`);
-}
-function confirmDate(){
-  R.date=document.getElementById('di').value||R.date;
-  R.time=document.getElementById('ti').value||R.time;
+/* ==================================================================
+ * 自定义日期选择（月历 Sheet，风格与明细页月历统一；只选日期，不选时间）
+ * ================================================================== */
+let pickMonth=ym(TODAY),pickDate=TODAY;
+function updateDatePill(){
   document.getElementById('r-datelabel').textContent=labelOf(R.date);
+  /* 补记历史账时胶囊加深提示 */
+  document.getElementById('r-datepill').classList.toggle('past',R.date!==TODAY);
+}
+function openDate(){
+  pickMonth=ym(R.date);pickDate=R.date;
+  renderDateSheet();
+}
+function renderDateSheet(){
+  /* 快捷日期 chips：今天 / 昨天 / 前天，点选即生效并收起 */
+  const offs=[['今天',0],['昨天',-1],['前天',-2]];
+  const quick=offs.map(([t,o])=>{
+    const k=dateKey(addDay(new Date(),o));
+    return `<span class="qchip ${pickDate===k?'on':''}" onclick="setQuickDay(${o})">${t}</span>`;
+  }).join('');
+  /* 月历网格：每格日期 + 当日支出（复用明细月历视觉） */
+  const first=pd(pickMonth+'-01');
+  const start=new Date(first);start.setDate(1-first.getDay());
+  let cells=WEEK.map(w=>`<div class="w">${w}</div>`).join('');
+  for(let i=0;i<42;i++){
+    const d=addDay(start,i),key=dateKey(d);
+    const off=ym(key)!==pickMonth;
+    const o=sumBy(store.state.records.filter(r=>r.date===key),'expense');
+    const cls=['cell',off?'dim':'',key===TODAY?'today':'',key===pickDate?'on':''].join(' ');
+    cells+=`<div class="${cls}" onclick="pickCell('${key}')"><span>${d.getDate()}</span><span class="m">${o>0?fmt0(o):''}</span></div>`;
+  }
+  sheet(`<h4>选择日期</h4><p class="desc">补记以前的账，点日期即可</p>
+    <div class="chips" style="margin-bottom:10px">${quick}</div>
+    <div class="cal-top" style="padding:0 2px 10px"><span>${first.getFullYear()}年${first.getMonth()+1}月</span>
+      <div class="ar"><button class="arrow" onclick="shiftPick(-1)">‹</button><button class="arrow" onclick="shiftPick(1)">›</button></div></div>
+    <div class="cal-grid cal-mini">${cells}</div>`);
+}
+/* 点选即确认：写入日期并收起浮层 */
+function setQuickDay(o){applyPickDate(dateKey(addDay(new Date(),o)));}
+function pickCell(k){applyPickDate(k);}
+function applyPickDate(k){
+  R.date=k;
+  updateDatePill();
   closeSheet();
 }
+function shiftPick(n){const d=pd(pickMonth+'-01');d.setMonth(d.getMonth()+n);pickMonth=dateKey(d).slice(0,7);renderDateSheet();}
+/* 明细页日分组头「＋」：带日期直接打开记一笔 */
+function addOnDay(day){openRecord(null,day);}
 /* 写操作统一入口：写库 → store.refresh() → 广播 */
 async function saveRecord(){
   const yuan=parseFloat(R.amt);
@@ -915,14 +963,34 @@ function addCat(type){
     <div class="btn" onclick="confirmCat('${type}')">创建</div>
     <div class="btn ghost" onclick="openCats()">返回</div>`);
 }
-async function confirmCat(type){
-  const v=document.getElementById('ci').value.trim();if(!v)return;
+/* 创建一级分类（含「其他」二级兜底），返回新分类 id */
+async function createParentCat(type,name){
   const list=parents(type);
   const color=String(list.length%PALETTE.length);     // 配色按顺序循环
   const pid=uid();
-  await db.categories.add({id:pid,name:v,type,parentId:null,sortOrder:Date.now(),archived:false,icon:v.slice(0,1),color});
+  await db.categories.add({id:pid,name,type,parentId:null,sortOrder:Date.now(),archived:false,icon:name.slice(0,1),color});
   await db.categories.add({id:uid(),name:'其他',type,parentId:pid,sortOrder:1,archived:false,icon:'其',color});
+  return pid;
+}
+async function confirmCat(type){
+  const v=document.getElementById('ci').value.trim();if(!v)return;
+  await createParentCat(type,v);
   await store.refresh();notify();openCats();
+}
+/* 记一笔页宫格末尾「＋」：就地添加一级分类并自动选中 */
+function addCatQuick(){
+  sheet(`<h4>新的一级分类</h4><p class="desc">图标取首字、配色自动循环，并自带「其他」二级</p>
+    <div class="field"><input id="ci" placeholder="例如：宠物"></div>
+    <div class="btn" onclick="confirmCatQuick()">创建</div>
+    <div class="btn ghost" onclick="closeSheet()">返回</div>`);
+}
+async function confirmCatQuick(){
+  const v=document.getElementById('ci').value.trim();if(!v)return;
+  const pid=await createParentCat(R.type,v);
+  await store.refresh();notify();
+  const s=subsOf(pid);
+  R.c1=pid;R.c2=s[0]?s[0].id:'';
+  closeSheet();renderRecord();toast('已添加分类');
 }
 
 /* ==================================================================
@@ -945,10 +1013,10 @@ function expJSON(){
   toast('已导出 JSON');
 }
 function expCSV(){
-  const rows=[['日期','时间','类型','一级分类','二级分类','备注','金额(元)']];
-  store.state.records.slice().sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)).forEach(r=>{
+  const rows=[['日期','类型','一级分类','二级分类','备注','金额(元)']];
+  store.state.records.slice().sort((a,b)=>(a.date+(a.createdAt||'')).localeCompare(b.date+(b.createdAt||''))).forEach(r=>{
     const c=catById(r.categoryId), p=parentOf(c);
-    rows.push([r.date,r.time,r.type==='expense'?'支出':'收入',p?p.name:'',c?c.name:'',r.note||'',(r.amount/100).toFixed(2)]);
+    rows.push([r.date,r.type==='expense'?'支出':'收入',p?p.name:'',c?c.name:'',r.note||'',(r.amount/100).toFixed(2)]);
   });
   dl(`轻账账单-${TODAY}.csv`,rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n'),'csv');
   toast('已导出 CSV');
