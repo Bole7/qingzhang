@@ -1,0 +1,35 @@
+/* ================================================================
+ * 轻账 · 通用组件
+ * 通用组件：弹层 Sheet / 遮罩 / Toast / 按钮 / 表单 / 开关 / chips
+ * ================================================================ */
+/* 弹层 */
+.mask{position:fixed;inset:0;background:rgba(59,76,94,.28);z-index:50;display:none}
+.mask.on{display:block;animation:fade .2s ease}
+.sheet{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:480px;z-index:60;background:#fff;border-radius:28px 28px 0 0;padding:18px 22px 34px;display:none;max-height:76%;overflow-y:auto}
+.sheet.on{display:block;animation:up .28s cubic-bezier(.2,.8,.3,1)}
+@keyframes up{from{transform:translate(-50%,100%)}to{transform:translate(-50%,0)}}
+.sheet h4{margin:0 0 4px;font-size:15px;font-weight:500;text-align:center}
+.sheet .desc{margin:0 0 16px;font-size:12px;color:var(--ink3);text-align:center}
+.field{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:.5px solid #F0F5FA;font-size:13.5px}
+.field label{width:64px;color:var(--ink2);font-size:13px;flex:0 0 auto}
+.field input{flex:1;border:0;outline:0;font-size:14px;font-family:inherit;color:var(--ink);background:none;min-width:0}
+.btn{margin-top:18px;padding:14px;border-radius:16px;background:var(--blue);color:#fff;text-align:center;font-size:14.5px;cursor:pointer}
+.btn.ghost{background:#EDF3F9;color:var(--ink);margin-top:10px}
+.btn.danger{background:#fff;color:var(--red);border:.5px solid rgba(217,112,112,.4);margin-top:10px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 4px}
+.chipx{padding:6px 12px;border-radius:14px;background:#EDF3F9;font-size:12.5px;color:var(--ink2);cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+.chipx .x{color:var(--ink3);font-size:14px;padding:2px 4px 2px 8px;margin-right:-6px;min-width:22px;text-align:center}
+.toast{position:fixed;left:50%;bottom:120px;transform:translateX(-50%);background:rgba(59,76,94,.92);color:#fff;font-size:12.5px;padding:9px 18px;border-radius:16px;z-index:90;opacity:0;transition:opacity .25s;pointer-events:none;white-space:nowrap}
+.toast.on{opacity:1}
+.brow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:.5px solid #F0F5FA;font-size:13px}
+.brow input{width:76px;border:0;outline:0;font-size:13.5px;font-family:inherit;color:var(--ink);background:#EDF3F9;border-radius:10px;padding:7px 10px;text-align:right}
+/* 开关（复用于各 Sheet 与记一笔页） */
+.switch{width:42px;height:24px;border-radius:14px;background:#DCE5EE;position:relative;cursor:pointer;transition:background .2s;flex:0 0 auto}
+.switch i{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left .2s}
+.switch.on{background:var(--blue)}
+.switch.on i{left:21px}
+/* 记一笔页「计入本月统计」开关行 */
+.rec-toggle{margin:10px 22px 0;display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-radius:16px;background:rgba(255,255,255,.8);border:.5px solid var(--line);font-size:13px;cursor:pointer}
+.rec-toggle small{display:block;font-size:11px;color:var(--ink3);margin-top:2px}
+/* 明细条目「大额」小标（不计入本月统计的记录） */
+.tagx{font-style:normal;font-size:10px;color:var(--ink3);background:#EDF3F9;border-radius:8px;padding:2px 6px;margin-left:6px;vertical-align:1px}

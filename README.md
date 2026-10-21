@@ -17,10 +17,48 @@
 
 ## 🛠 技术栈
 
-- 单文件 `index.html`（HTML + CSS + 原生 JS，零构建）
+- 原生 HTML + CSS + JavaScript，**零构建、零依赖安装**
 - [Dexie](https://dexie.org/) —— IndexedDB 封装，本地持久化
 - [Chart.js](https://www.chartjs.org/) —— 饼图 / 柱状图
 - 无后端、无构建步骤、无第三方服务
+- 两个第三方库以本地文件形式放在 `vendor/`，**不依赖 CDN，断网也能正常使用**
+
+## 📁 项目结构
+
+```
+.
+├── index.html              入口（仅骨架 + 资源引用）
+├── css/
+│   ├── 00-base.css         变量、重置、页面骨架、底部导航
+│   ├── 10-views.css        首页 / 明细 / 统计 / 我的
+│   ├── 20-record.css       记一笔页
+│   └── 30-components.css   弹层、按钮、表单、开关、Toast
+├── js/
+│   ├── 00-config.js        常量与默认配置
+│   ├── 01-utils.js         日期、金额、DOM 工具
+│   ├── 02-db.js            Dexie 数据库定义与迁移
+│   ├── 03-domain.js        领域逻辑（统计、预算、分类树）
+│   ├── 04-ui.js            通用 UI 交互（弹层、Toast、确认框）
+│   ├── 10-home.js          首页
+│   ├── 11-detail.js        明细页
+│   ├── 12-stat.js          统计页（图表）
+│   ├── 13-me.js            我的页
+│   ├── 20-record.js        记一笔（数字键盘）
+│   ├── 30-budget.js        预算管理
+│   ├── 31-categories.js    分类管理
+│   ├── 32-backup.js        导入 / 导出
+│   ├── 40-router.js        视图切换与路由
+│   └── 99-main.js          启动入口
+└── vendor/
+    ├── dexie.min.js        Dexie 3.2.4
+    └── chart.umd.min.js    Chart.js 4.4.1
+```
+
+`css/` 与 `js/` 下的**数字前缀即为加载顺序**，也是依赖顺序。新增脚本请插到对应分组的末尾，
+不要放到 `99-main.js` 之后——它在顶层就执行 `init()`。
+
+代码保持**脚本顶层作用域**（未使用 ES Module），因此页面里可以直接用内联 `onclick` 调用全局函数，
+同时保证 `file://` 双击打开也不会被 CORS 拦截。
 
 ## 🚀 在线使用
 
@@ -34,28 +72,32 @@
 - 用微信打开 / 用另一个浏览器打开，数据彼此**不互通**（每个 App 有独立存储分区）
 - **请固定用一个浏览器入口**（推荐 Chrome 加到主屏幕），并**定期导出 JSON 备份**
 
-> ⚠️ 当前版本页面资源需联网加载，**断网时无法进入界面**（数据本身在本地不受影响）。如需彻底离线，见下方「打包为安卓 App」。
+> 页面资源全部本地化，**首次加载后断网也能进入界面**。数据本身始终在本地，不受网络影响。
+> 如需彻底离线（连首次加载都不依赖网络），见下方「打包为安卓 App」。
 
 ## 👨‍💻 开发者
 
 ### 本地运行
 直接用浏览器打开 `index.html` 即可（或起任意静态服务，如 `npx serve`）。
+无需安装依赖、无需编译，改完 CSS / JS 刷新即生效。
 
 ### 部署到 GitHub Pages
-把 `index.html` 推到仓库 `main` 分支根目录，开启 Pages 即从 `https://<用户名>.github.io/<仓库名>/` 可访问。
+把整个项目推到仓库 `main` 分支根目录，Pages 从 `https://<用户名>.github.io/<仓库名>/` 访问。
+页面内所有资源均为相对路径（`css/…`、`js/…`、`vendor/…`），部署在子路径下无需任何改动。
 
 ### 打包为安卓 App（APK）
 本项目可用 [Capacitor](https://capacitorjs.com/) 套壳打包成原生 APK：
 
 ```bash
-# 准备工程（含 www/index.html）
+# 准备工程（把本项目文件整体放到 www/ 下）
 npm install
 npx cap add android      # 生成 android/ 原生工程（需本机装 Android Studio + SDK）
 npx cap sync             # 把页面同步进原生工程
 npx cap open android     # 打开 Android Studio → Build APK
 ```
 
-打包后数据进入 **App 私有沙盒**，彻底解决「多入口隔离 / 被浏览器清缓存 / 断网进不去」三个问题；现有页面代码一行不用改。
+打包后数据进入 **App 私有沙盒**，彻底解决「多入口隔离 / 被浏览器清缓存 / 断网进不去」三个问题；
+现有页面代码一行不用改（资源本就是相对路径）。
 
 ## 📌 注意事项
 

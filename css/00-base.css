@@ -1,0 +1,36 @@
+/* ================================================================
+ * 轻账 · 全局基础
+ * 全局基础：CSS 变量、重置、页面骨架、底部导航
+ * ================================================================ */
+:root{
+  --ink:#3B4C5E; --ink2:#7A8B9C; --ink3:#A9B7C4;
+  --blue:#7FA8D4; --blue-d:#5C87B8; --blue-l:#D9E8F6; --blue-xl:#EDF4FB;
+  --paper:#F8FBFE;
+  --green:#8CC2A4; --coral:#EFA98F; --sand:#EBD3A0; --lilac:#B9B6DC;
+  --red:#D97070;
+  --line:rgba(127,168,212,.22);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",-apple-system,system-ui,sans-serif;
+  font-weight:400;font-size:13.5px;letter-spacing:.01em;
+}
+button{font-family:inherit}
+.app{max-width:480px;margin:0 auto;min-height:100vh;position:relative;background:var(--blue-xl);overflow-x:hidden;overflow-x:clip}
+.view{display:none;position:relative;min-height:100vh;padding-bottom:120px}
+.view.on{display:block;animation:fade .3s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.status{height:52px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 22px 10px;font-size:13px;font-weight:500;position:relative;z-index:3}
+.wash{position:absolute;top:0;left:50%;transform:translateX(-50%);pointer-events:none;mix-blend-mode:multiply;z-index:1}
+.grain{position:fixed;inset:0;pointer-events:none;opacity:.05;mix-blend-mode:multiply;z-index:2}
+.bodyz{position:relative;z-index:3}
+
+/* 导航 */
+.tabbar{position:fixed;left:50%;transform:translateX(-50%);bottom:12px;width:calc(100% - 24px);max-width:456px;height:74px;background:rgba(255,255,255,.94);border:.5px solid var(--line);border-radius:26px;display:flex;align-items:center;justify-content:space-around;z-index:30}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10.5px;color:var(--ink3);cursor:pointer;background:none;border:0;padding:0}
+.tab.on{color:var(--blue-d)}
+.tab svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.fab{width:52px;height:52px;border-radius:19px;background:var(--blue);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 18px rgba(127,168,212,.42);cursor:pointer;margin-top:-6px;border:0}
+.fab svg{width:24px;height:24px;stroke:#fff;stroke-width:2;fill:none;stroke-linecap:round}

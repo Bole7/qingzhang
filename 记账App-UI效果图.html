@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>轻账 · 手机记账 App UI 效果图</title>
+<style>
+  :root{
+    --ink:#3B4C5E; --ink2:#7A8B9C; --ink3:#A9B7C4;
+    --blue:#7FA8D4; --blue-d:#5C87B8; --blue-l:#D9E8F6; --blue-xl:#EDF4FB;
+    --paper:#F8FBFE; --white:#FFFFFF;
+    --green:#8CC2A4; --coral:#EFA98F; --sand:#EBD3A0; --lilac:#B9B6DC;
+    --r-s:10px; --r-m:16px; --r-l:24px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{
+    margin:0;padding:48px 24px;background:var(--paper);color:var(--ink);
+    font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",-apple-system,system-ui,sans-serif;
+    font-weight:400;letter-spacing:.01em;
+    background-image:radial-gradient(circle at 18% 12%,#EAF3FB 0,transparent 45%),radial-gradient(circle at 82% 78%,#EFF6FB 0,transparent 40%);
+  }
+  .stage{display:flex;gap:56px;align-items:flex-start;justify-content:center;flex-wrap:wrap}
+
+  /* ---------- 手机外壳 ---------- */
+  .phone{
+    width:390px;height:844px;border-radius:54px;background:#fff;flex:0 0 auto;position:relative;
+    border:1px solid #E4EDF5;
+    box-shadow:0 24px 60px rgba(122,150,180,.18),0 2px 0 rgba(255,255,255,.9) inset;
+    padding:12px;
+  }
+  .screen{
+    width:100%;height:100%;border-radius:44px;overflow:hidden;position:relative;
+    background:var(--blue-xl);
+  }
+  .view{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;display:none;padding-bottom:96px}
+  .view.on{display:block;animation:fade .35s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .view::-webkit-scrollbar{width:0}
+  .status{height:46px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 26px 6px;font-size:13px;color:var(--ink);font-weight:500;flex:0 0 auto}
+  .notch{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:112px;height:28px;border-radius:16px;background:#fff;z-index:5}
+
+  /* ---------- 水彩装饰 ---------- */
+  .wash{position:absolute;pointer-events:none;mix-blend-mode:multiply}
+  .grain{position:absolute;inset:0;pointer-events:none;opacity:.05;mix-blend-mode:multiply}
+
+  /* ---------- 首页 ---------- */
+  .hero{position:relative;padding:8px 24px 4px;text-align:center}
+  .hero .date{font-size:13px;color:var(--ink2);margin-bottom:22px}
+  .blob-wrap{position:relative;height:250px;display:flex;align-items:center;justify-content:center}
+  .amt-label{font-size:13px;color:var(--ink2);letter-spacing:.14em;margin-bottom:6px}
+  .amt{font-size:58px;font-weight:300;line-height:1;color:var(--ink);letter-spacing:-.02em}
+  .amt .cny{font-size:26px;font-weight:300;margin-right:4px;color:var(--ink2)}
+  .amt-sub{margin-top:14px;font-size:13px;color:var(--ink2)}
+  .amt-sub b{font-weight:500;color:var(--ink)}
+  .month-chip{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:5px 14px;border-radius:20px;background:rgba(255,255,255,.72);font-size:12px;color:var(--ink2);border:.5px solid rgba(127,168,212,.28)}
+
+  .budget{margin:22px 22px 0;background:rgba(255,255,255,.78);border:.5px solid rgba(127,168,212,.24);border-radius:var(--r-m);padding:14px 16px}
+  .budget .row{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;color:var(--ink2);margin-bottom:10px}
+  .budget .row b{font-size:13px;color:var(--ink);font-weight:500}
+  .bar{height:7px;border-radius:6px;background:#E7F0F8;overflow:hidden}
+  .bar i{display:block;height:100%;width:82%;border-radius:6px;background:var(--blue);opacity:.85}
+  .bar-note{margin-top:8px;font-size:11px;color:var(--ink3)}
+
+  .card{margin:20px 22px 0;background:#fff;border:.5px solid rgba(127,168,212,.22);border-radius:var(--r-l);padding:18px}
+  .card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+  .card-head h3{margin:0;font-size:14px;font-weight:500}
+  .card-head a{font-size:12px;color:var(--blue-d);text-decoration:none}
+  .item{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:.5px solid #F0F5FA}
+  .item:last-child{border-bottom:0;padding-bottom:0}
+  .ico{width:38px;height:38px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:13px;flex:0 0 auto}
+  .item .t{flex:1;min-width:0}
+  .item .t p{margin:0;font-size:13.5px}
+  .item .t span{font-size:11.5px;color:var(--ink3)}
+  .item .v{font-size:14px;font-weight:500;letter-spacing:.01em}
+  .minus{color:var(--ink)} .plus{color:var(--green)}
+
+  .add{margin:16px 22px 0;display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border-radius:var(--r-m);border:1px dashed rgba(127,168,212,.5);background:rgba(217,232,246,.35);color:var(--blue-d);font-size:13.5px;cursor:pointer}
+  .add:active{background:rgba(217,232,246,.6)}
+  .day-head{display:flex;justify-content:space-between;font-size:12px;color:var(--ink3);padding:16px 2px 2px}
+
+  /* ---------- 底部导航 ---------- */
+  .tabbar{position:absolute;left:12px;right:12px;bottom:12px;height:74px;background:rgba(255,255,255,.94);border:.5px solid rgba(127,168,212,.22);border-radius:26px;display:flex;align-items:center;justify-content:space-around;z-index:20}
+  .tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10.5px;color:var(--ink3);cursor:pointer;background:none;border:0;padding:0;font-family:inherit}
+  .tab.on{color:var(--blue-d)}
+  .tab svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+  .fab{width:52px;height:52px;border-radius:19px;background:var(--blue);display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 8px 18px rgba(127,168,212,.42);cursor:pointer;margin-top:-6px}
+  .fab svg{width:24px;height:24px;stroke:#fff;stroke-width:2;fill:none;stroke-linecap:round}
+
+  /* ---------- 记一笔 ---------- */
+  .rec-top{padding:4px 22px 0;display:flex;justify-content:space-between;align-items:center}
+  .seg{display:flex;background:#EDF3F9;border-radius:14px;padding:3px}
+  .seg button{border:0;background:none;font-family:inherit;font-size:13px;color:var(--ink2);padding:6px 20px;border-radius:11px;cursor:pointer}
+  .seg button.on{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(122,150,180,.14)}
+  .rec-amount{padding:26px 24px 12px;text-align:right;font-size:44px;font-weight:300;letter-spacing:-.01em}
+  .rec-amount span{font-size:22px;color:var(--ink2);margin-right:5px}
+  .rec-note{margin:0 22px;padding:12px 14px;border-radius:var(--r-m);background:rgba(255,255,255,.8);border:.5px solid rgba(127,168,212,.22);font-size:13px;color:var(--ink3)}
+  .cats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px 8px;padding:20px 20px 8px}
+  .cat{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11.5px;color:var(--ink2);cursor:pointer;background:none;border:0;font-family:inherit}
+  .cat .ico{width:46px;height:46px;border-radius:16px;font-size:14px}
+  .cat.on .ico{outline:1.5px solid var(--blue-d);outline-offset:2px}
+  .cat.on{color:var(--ink)}
+  .subwrap{margin:6px 12px 0}
+  .subwrap-l{font-size:11.5px;color:var(--ink3);padding:0 8px 8px}
+  .subs{display:flex;gap:10px;overflow-x:auto;padding:2px 8px 10px;scrollbar-width:none}
+  .subs::-webkit-scrollbar{height:0}
+  .sub{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:11px;color:var(--ink2)}
+  .sub .ico{width:38px;height:38px;border-radius:12px;font-size:12px}
+  .sub.on{color:var(--ink)}
+  .sub.on .ico{outline:1.5px solid var(--blue-d);outline-offset:2px}
+  .keys{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;padding:8px 14px 10px}
+  .keys button{border:0;background:none;font-family:inherit;font-size:22px;font-weight:300;color:var(--ink);padding:12px 0;border-radius:12px;cursor:pointer}
+  .keys button:active{background:#E7F0F8}
+  .keys .fn{font-size:13px;color:var(--ink2)}
+  .save{margin:2px 22px 0;padding:15px;border-radius:var(--r-m);background:var(--blue);color:#fff;text-align:center;font-size:14.5px;cursor:pointer;box-shadow:0 10px 22px rgba(127,168,212,.35)}
+
+  /* ---------- 明细 ---------- */
+  .sum{margin:4px 22px 0;background:rgba(255,255,255,.85);border:.5px solid rgba(127,168,212,.22);border-radius:var(--r-l);padding:16px 18px;display:flex;gap:8px}
+  .sum div{flex:1}
+  .sum p{margin:0 0 5px;font-size:11.5px;color:var(--ink3)}
+  .sum b{font-size:19px;font-weight:400}
+
+  /* ---------- 统计 ---------- */
+  .donut-wrap{display:flex;align-items:center;gap:18px;padding:10px 22px 0}
+  .legend{flex:1;display:flex;flex-direction:column;gap:11px}
+  .lg{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink2)}
+  .dot{width:9px;height:9px;border-radius:50%}
+  .lg b{margin-left:auto;color:var(--ink);font-weight:500}
+  .bars{padding:18px 22px 0;display:flex;align-items:flex-end;gap:14px;height:150px}
+  .bcol{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px}
+  .bcol i{display:block;width:100%;border-radius:8px 8px 4px 4px}
+  .bcol span{font-size:11px;color:var(--ink3)}
+
+  /* ---------- 我的 ---------- */
+  .me-top{display:flex;align-items:center;gap:14px;padding:6px 22px 0}
+  .avatar{width:58px;height:58px;border-radius:20px;background:var(--blue-l);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--blue-d)}
+  .me-top p{margin:0 0 4px;font-size:16px}
+  .me-top span{font-size:12px;color:var(--ink3)}
+  .list{margin:20px 22px 0;background:#fff;border:.5px solid rgba(127,168,212,.22);border-radius:var(--r-l);overflow:hidden}
+  .row-l{display:flex;align-items:center;gap:12px;padding:15px 18px;border-bottom:.5px solid #F2F6FA;font-size:13.5px;cursor:pointer}
+  .row-l:last-child{border-bottom:0}
+  .row-l em{margin-left:auto;font-style:normal;font-size:12px;color:var(--ink3)}
+
+  /* ---------- 右侧说明 ---------- */
+  .doc{width:300px;padding-top:10px}
+  .doc h1{margin:0 0 6px;font-size:20px;font-weight:500}
+  .doc .sub{margin:0 0 26px;font-size:13px;color:var(--ink2);line-height:1.7}
+  .picks{display:flex;flex-direction:column;gap:8px;margin-bottom:26px}
+  .pick{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:14px;border:.5px solid rgba(127,168,212,.25);background:rgba(255,255,255,.7);cursor:pointer;font-size:13px;color:var(--ink2);font-family:inherit;text-align:left}
+  .pick.on{background:#fff;color:var(--ink);box-shadow:0 4px 14px rgba(122,150,180,.13)}
+  .pick i{width:6px;height:6px;border-radius:50%;background:var(--blue);opacity:.35}
+  .pick.on i{opacity:1}
+  .pick b{margin-left:auto;font-weight:400;font-size:11.5px;color:var(--ink3)}
+  .notes{font-size:12.5px;color:var(--ink2);line-height:1.9}
+  .notes h4{margin:0 0 8px;font-size:13px;font-weight:500;color:var(--ink)}
+  .sw{display:flex;gap:8px;margin:6px 0 18px}
+  .sw i{width:26px;height:26px;border-radius:9px}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <filter id="wc"><feTurbulence type="fractalNoise" baseFrequency="0.021" numOctaves="3" seed="9" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="26" xChannelSelector="R" yChannelSelector="G"/></filter>
+    <filter id="wc2"><feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="14" xChannelSelector="R" yChannelSelector="G"/></filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2"/></filter>
+  </defs>
+</svg>
+
+<div class="stage">
+
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="screen">
+
+      <!-- ============ 首页 ============ -->
+      <section class="view on" id="v-home">
+        <svg class="wash" width="390" height="330" viewBox="0 0 390 330" style="top:0;left:0">
+          <g filter="url(#wc)" opacity=".55">
+            <ellipse cx="195" cy="150" rx="140" ry="118" fill="#C9DFF2"/>
+            <ellipse cx="175" cy="140" rx="112" ry="96" fill="#DCEBF8" opacity=".8"/>
+          </g>
+          <g filter="url(#wc2)" opacity=".4">
+            <ellipse cx="300" cy="70" rx="66" ry="46" fill="#BFD9F0"/>
+            <ellipse cx="70" cy="240" rx="54" ry="34" fill="#D6E8F6"/>
+          </g>
+        </svg>
+        <svg class="grain" width="390" height="844"><rect width="390" height="844" filter="url(#grain)"/></svg>
+
+        <div class="status"><span>9:41</span><span>轻账</span></div>
+        <div class="hero">
+          <div class="date">9月7日 · 星期一</div>
+          <div class="blob-wrap">
+            <div style="position:relative;z-index:2">
+              <div class="amt-label">今日支出</div>
+              <div class="amt"><span class="cny">¥</span>86.50</div>
+              <div class="amt-sub">本月总消费 <b>¥ 3,280.40</b></div>
+              <div class="month-chip"><span style="width:5px;height:5px;border-radius:50%;background:var(--green);display:inline-block"></span>比上月少花 ¥412</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="budget">
+          <div class="row"><span>本月预算</span><span><b>3,280.40</b> / 4,000.00</span></div>
+          <div class="bar"><i></i></div>
+          <div class="bar-note">剩余 ¥719.60，还有 23 天，日均可用 ¥31.30</div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>收支明细</h3><a href="#">全部 &rsaquo;</a></div>
+          <div class="day-head"><span>今天</span><span>支出 ¥86.50</span></div>
+          <div class="item">
+            <div class="ico" style="background:#E7F0F8;color:#5C87B8">餐</div>
+            <div class="t"><p>豆浆油条</p><span>餐饮 · 08:12</span></div>
+            <div class="v minus">-8.50</div>
+          </div>
+          <div class="item">
+            <div class="ico" style="background:#E6F2EC;color:#4E9376">交</div>
+            <div class="t"><p>地铁出行</p><span>交通 · 08:40</span></div>
+            <div class="v minus">-6.00</div>
+          </div>
+          <div class="item">
+            <div class="ico" style="background:#FBEDE7;color:#C9795A">餐</div>
+            <div class="t"><p>公司午餐</p><span>餐饮 · 12:05</span></div>
+            <div class="v minus">-28.00</div>
+          </div>
+          <div class="item">
+            <div class="ico" style="background:#F3F0E4;color:#B08D3F">饮</div>
+            <div class="t"><p>咖啡</p><span>餐饮 · 14:30</span></div>
+            <div class="v minus">-22.00</div>
+          </div>
+          <div class="item">
+            <div class="ico" style="background:#EDEBF7;color:#736FAE">购</div>
+            <div class="t"><p>超市日用</p><span>购物 · 19:20</span></div>
+            <div class="v minus">-22.00</div>
+          </div>
+        </div>
+
+        <div class="add" onclick="go('v-record',1)">
+          <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          添加一笔收入 / 支出
+        </div>
+      </section>
+
+      <!-- ============ 记一笔 ============ -->
+      <section class="view" id="v-record">
+        <svg class="wash" width="390" height="200" viewBox="0 0 390 200" style="top:0;left:0">
+          <g filter="url(#wc)" opacity=".45"><ellipse cx="200" cy="60" rx="150" ry="90" fill="#DCEBF8"/></g>
+        </svg>
+        <div class="status"><span>9:41</span><span>记一笔</span></div>
+        <div class="rec-top">
+          <div class="seg">
+            <button class="on">支出</button><button>收入</button>
+          </div>
+          <span style="font-size:12px;color:var(--ink3)">今天 ▾</span>
+        </div>
+        <div class="rec-amount"><span>¥</span>86.50</div>
+        <div class="rec-note">备注：公司楼下的咖啡</div>
+
+        <div class="cats">
+          <button class="cat on"><div class="ico" style="background:#E7F0F8;color:#5C87B8">餐</div>餐饮</button>
+          <button class="cat"><div class="ico" style="background:#E6F2EC;color:#4E9376">交</div>交通</button>
+          <button class="cat"><div class="ico" style="background:#EDEBF7;color:#736FAE">购</div>购物</button>
+          <button class="cat"><div class="ico" style="background:#FBEDE7;color:#C9795A">娱</div>娱乐</button>
+          <button class="cat"><div class="ico" style="background:#F3F0E4;color:#B08D3F">医</div>医疗</button>
+          <button class="cat"><div class="ico" style="background:#EAF1F8;color:#5C87B8">住</div>居住</button>
+          <button class="cat"><div class="ico" style="background:#EDF3F2;color:#4E9376">学</div>学习</button>
+          <button class="cat"><div class="ico" style="background:#F1EFE9;color:#8A8B84">他</div>其他</button>
+        </div>
+
+        <div class="subwrap">
+          <div class="subwrap-l">餐饮 · 二级分类（必选，可左右滑动）</div>
+          <div class="subs">
+            <div class="sub on"><div class="ico" style="background:#E7F0F8;color:#5C87B8">早</div>早餐</div>
+            <div class="sub"><div class="ico" style="background:#E7F0F8;color:#5C87B8">午</div>午餐</div>
+            <div class="sub"><div class="ico" style="background:#E7F0F8;color:#5C87B8">晚</div>晚餐</div>
+            <div class="sub"><div class="ico" style="background:#E7F0F8;color:#5C87B8">外</div>外卖</div>
+            <div class="sub"><div class="ico" style="background:#E7F0F8;color:#5C87B8">饮</div>饮品</div>
+            <div class="sub"><div class="ico" style="background:#E7F0F8;color:#5C87B8">聚</div>聚餐</div>
+            <div class="sub"><div class="ico" style="background:#E7F0F8;color:#5C87B8">他</div>其他</div>
+          </div>
+        </div>
+
+        <div class="keys">
+          <button>1</button><button>2</button><button>3</button>
+          <button>4</button><button>5</button><button>6</button>
+          <button>7</button><button>8</button><button>9</button>
+          <button class="fn">.</button><button>0</button>
+          <button class="fn">
+            <svg width="18" height="18" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><path d="M21 4H8l-5 8 5 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/><path d="M18 9l-6 6M12 9l6 6"/></svg>
+          </button>
+        </div>
+        <div class="save" onclick="go('v-home',0)">保存这一笔</div>
+      </section>
+
+      <!-- ============ 明细 ============ -->
+      <section class="view" id="v-detail">
+        <svg class="wash" width="390" height="180" viewBox="0 0 390 180" style="top:0;left:0">
+          <g filter="url(#wc)" opacity=".4"><ellipse cx="120" cy="50" rx="150" ry="90" fill="#DCEBF8"/></g>
+        </svg>
+        <div class="status"><span>9:41</span><span>明细</span></div>
+        <div style="padding:6px 22px 0;font-size:19px">9 月</div>
+        <div class="sum">
+          <div><p>收入</p><b style="color:var(--green)">12,000</b></div>
+          <div><p>支出</p><b>3,280.40</b></div>
+          <div><p>结余</p><b style="color:var(--blue-d)">8,719.60</b></div>
+        </div>
+
+        <div class="card" style="margin-top:18px">
+          <div class="day-head" style="padding-top:0"><span>9月7日 今天</span><span>支 86.50</span></div>
+          <div class="item"><div class="ico" style="background:#E7F0F8;color:#5C87B8">餐</div><div class="t"><p>豆浆油条</p><span>08:12</span></div><div class="v minus">-8.50</div></div>
+          <div class="item"><div class="ico" style="background:#E6F2EC;color:#4E9376">交</div><div class="t"><p>地铁出行</p><span>08:40</span></div><div class="v minus">-6.00</div></div>
+          <div class="item"><div class="ico" style="background:#FBEDE7;color:#C9795A">餐</div><div class="t"><p>公司午餐</p><span>12:05</span></div><div class="v minus">-28.00</div></div>
+          <div class="item"><div class="ico" style="background:#F3F0E4;color:#B08D3F">饮</div><div class="t"><p>咖啡</p><span>14:30</span></div><div class="v minus">-22.00</div></div>
+          <div class="item"><div class="ico" style="background:#EDEBF7;color:#736FAE">购</div><div class="t"><p>超市日用</p><span>19:20</span></div><div class="v minus">-22.00</div></div>
+
+          <div class="day-head"><span>9月6日 昨天</span><span>支 116.80</span></div>
+          <div class="item"><div class="ico" style="background:#E6F2EC;color:#4E9376">交</div><div class="t"><p>打车回家</p><span>22:10</span></div><div class="v minus">-32.00</div></div>
+          <div class="item"><div class="ico" style="background:#FBEDE7;color:#C9795A">娱</div><div class="t"><p>电影票</p><span>20:00</span></div><div class="v minus">-58.00</div></div>
+          <div class="item"><div class="ico" style="background:#E7F0F8;color:#5C87B8">餐</div><div class="t"><p>水果</p><span>18:40</span></div><div class="v minus">-26.80</div></div>
+
+          <div class="day-head"><span>9月1日</span><span>收 12,000</span></div>
+          <div class="item"><div class="ico" style="background:#E6F2EC;color:#4E9376">薪</div><div class="t"><p>九月工资</p><span>10:00</span></div><div class="v plus">+12,000.00</div></div>
+        </div>
+      </section>
+
+      <!-- ============ 统计 ============ -->
+      <section class="view" id="v-stat">
+        <svg class="wash" width="390" height="220" viewBox="0 0 390 220" style="top:0;left:0">
+          <g filter="url(#wc)" opacity=".42"><ellipse cx="230" cy="70" rx="150" ry="100" fill="#DCEBF8"/></g>
+        </svg>
+        <div class="status"><span>9:41</span><span>统计</span></div>
+        <div style="padding:6px 22px 4px;font-size:19px">本月支出构成</div>
+        <div class="donut-wrap">
+          <svg width="140" height="140" viewBox="0 0 42 42" style="flex:0 0 auto">
+            <g filter="url(#wc2)">
+              <circle cx="21" cy="21" r="15.9" fill="none" stroke="#EAF1F8" stroke-width="5"/>
+              <circle cx="21" cy="21" r="15.9" fill="none" stroke="#7FA8D4" stroke-width="5" stroke-dasharray="39 61" stroke-dashoffset="25" stroke-linecap="round"/>
+              <circle cx="21" cy="21" r="15.9" fill="none" stroke="#8CC2A4" stroke-width="5" stroke-dasharray="13 87" stroke-dashoffset="-14"/>
+              <circle cx="21" cy="21" r="15.9" fill="none" stroke="#EBD3A0" stroke-width="5" stroke-dasharray="26 74" stroke-dashoffset="-27"/>
+              <circle cx="21" cy="21" r="15.9" fill="none" stroke="#EFA98F" stroke-width="5" stroke-dasharray="12 88" stroke-dashoffset="-53"/>
+              <circle cx="21" cy="21" r="15.9" fill="none" stroke="#B9B6DC" stroke-width="5" stroke-dasharray="10 90" stroke-dashoffset="-65"/>
+            </g>
+            <text x="21" y="20.2" text-anchor="middle" font-size="3.4" fill="#3B4C5E" font-family="sans-serif">3,280</text>
+            <text x="21" y="24.4" text-anchor="middle" font-size="2.4" fill="#A9B7C4" font-family="sans-serif">总支出</text>
+          </svg>
+          <div class="legend">
+            <div class="lg"><i class="dot" style="background:#7FA8D4"></i>餐饮 39%<b>1,280</b></div>
+            <div class="lg"><i class="dot" style="background:#8CC2A4"></i>交通 13%<b>420</b></div>
+            <div class="lg"><i class="dot" style="background:#EBD3A0"></i>购物 26%<b>860</b></div>
+            <div class="lg"><i class="dot" style="background:#EFA98F"></i>娱乐 12%<b>380</b></div>
+            <div class="lg"><i class="dot" style="background:#B9B6DC"></i>其他 10%<b>340</b></div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:20px">
+          <div class="card-head"><h3>近 6 个月趋势</h3><span style="font-size:11.5px;color:var(--ink3)">单位 元</span></div>
+          <div class="bars">
+            <div class="bcol"><i style="height:96px;background:#C9DFF2"></i><span>4月</span></div>
+            <div class="bcol"><i style="height:74px;background:#C9DFF2"></i><span>5月</span></div>
+            <div class="bcol"><i style="height:118px;background:#C9DFF2"></i><span>6月</span></div>
+            <div class="bcol"><i style="height:86px;background:#C9DFF2"></i><span>7月</span></div>
+            <div class="bcol"><i style="height:104px;background:#C9DFF2"></i><span>8月</span></div>
+            <div class="bcol"><i style="height:78px;background:#7FA8D4"></i><span>9月</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 我的 ============ -->
+      <section class="view" id="v-me">
+        <svg class="wash" width="390" height="200" viewBox="0 0 390 200" style="top:0;left:0">
+          <g filter="url(#wc)" opacity=".4"><ellipse cx="90" cy="60" rx="150" ry="95" fill="#DCEBF8"/></g>
+        </svg>
+        <div class="status"><span>9:41</span><span>我的</span></div>
+        <div class="me-top">
+          <div class="avatar">轻</div>
+          <div><p>阿发的账本</p><span>已连续记账 128 天</span></div>
+        </div>
+
+        <div class="sum" style="margin-top:22px">
+          <div><p>本月预算</p><b>4,000</b></div>
+          <div><p>日均支出</p><b>109</b></div>
+          <div><p>记账笔数</p><b>216</b></div>
+        </div>
+
+        <div class="list">
+          <div class="row-l"><div class="ico" style="width:32px;height:32px;border-radius:11px;background:#E7F0F8;color:#5C87B8">预</div>预算与提醒<em>已开启</em></div>
+          <div class="row-l"><div class="ico" style="width:32px;height:32px;border-radius:11px;background:#EDEBF7;color:#736FAE">类</div>分类管理<em>12 个</em></div>
+          <div class="row-l"><div class="ico" style="width:32px;height:32px;border-radius:11px;background:#E6F2EC;color:#4E9376">备</div>备份与导出<em>JSON / CSV</em></div>
+          <div class="row-l"><div class="ico" style="width:32px;height:32px;border-radius:11px;background:#F1EFE9;color:#8A8B84">设</div>设置<em></em></div>
+        </div>
+      </section>
+
+      <!-- 底部导航 -->
+      <nav class="tabbar">
+        <button class="tab on" data-v="v-home" data-i="0">
+          <svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V21h13V9.5"/></svg>首页
+        </button>
+        <button class="tab" data-v="v-detail" data-i="2">
+          <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>明细
+        </button>
+        <button class="fab" onclick="go('v-record',1)" aria-label="记一笔">
+          <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+        <button class="tab" data-v="v-stat" data-i="3">
+          <svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>统计
+        </button>
+        <button class="tab" data-v="v-me" data-i="4">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c1.4-3.6 4.1-5.4 7.5-5.4S18.1 16.4 19.5 20"/></svg>我的
+        </button>
+      </nav>
+    </div>
+  </div>
+
+  <!-- 右侧说明 -->
+  <aside class="doc">
+    <h1>轻账 · 记账 App UI</h1>
+    <p class="sub">干净简约 + 手绘水彩触感，淡蓝基调。首页正中是「今日支出」，下方一行小字给出本月总消费，再往下可直接添加收支明细。</p>
+
+    <div class="picks" id="picks">
+      <button class="pick on" data-v="v-home" data-i="0"><i></i>首页 · 今日金额<b>主屏</b></button>
+      <button class="pick" data-v="v-record" data-i="1"><i></i>记一笔<b>键盘</b></button>
+      <button class="pick" data-v="v-detail" data-i="2"><i></i>收支明细<b>流水</b></button>
+      <button class="pick" data-v="v-stat" data-i="3"><i></i>统计<b>图表</b></button>
+      <button class="pick" data-v="v-me" data-i="4"><i></i>我的<b>设置</b></button>
+    </div>
+
+    <div class="notes">
+      <h4>配色</h4>
+      <div class="sw">
+        <i style="background:#EDF4FB"></i><i style="background:#D9E8F6"></i><i style="background:#BFD9F0"></i>
+        <i style="background:#7FA8D4"></i><i style="background:#5C87B8"></i>
+        <i style="background:#8CC2A4"></i><i style="background:#EFA98F"></i>
+      </div>
+      <h4>设计要点</h4>
+      水彩晕染用 SVG 湍流位移滤镜生成不规则边缘，叠 multiply 混合；全局 0.5px 描边、24px 大圆角；数字用 300 字重大字号，弱化重量感；分类图标用单字圆形色块，避免具象图标带来的视觉噪音。
+    </div>
+  </aside>
+</div>
+
+<script>
+  function go(id, i){
+    document.querySelectorAll('.view').forEach(function(v){ v.classList.toggle('on', v.id === id); });
+    document.querySelectorAll('.tab').forEach(function(t){ t.classList.toggle('on', +t.dataset.i === i); });
+    document.querySelectorAll('.pick').forEach(function(p){ p.classList.toggle('on', +p.dataset.i === i); });
+  }
+  document.querySelectorAll('.tab').forEach(function(t){
+    t.addEventListener('click', function(){ go(t.dataset.v, +t.dataset.i); });
+  });
+  document.querySelectorAll('.pick').forEach(function(p){
+    p.addEventListener('click', function(){ go(p.dataset.v, +p.dataset.i); });
+  });
+  document.querySelectorAll('.cat').forEach(function(c){
+    c.addEventListener('click', function(){
+      document.querySelectorAll('.cat').forEach(function(x){ x.classList.remove('on'); });
+      c.classList.add('on');
+    });
+  });
+  document.querySelectorAll('.seg button').forEach(function(b){
+    b.addEventListener('click', function(){
+      document.querySelectorAll('.seg button').forEach(function(x){ x.classList.remove('on'); });
+      b.classList.add('on');
+    });
+  });
+  document.querySelectorAll('.keys button').forEach(function(b){
+    b.addEventListener('click', function(){
+      var el = document.querySelector('.rec-amount');
+      var t = b.textContent.trim();
+      var cur = el.textContent.replace('¥','').trim();
+      if(t === ''){ cur = cur.slice(0, -1) || '0'; }
+      else if(t === '.' && cur.indexOf('.') > -1){ return; }
+      else { cur = (cur === '0' ? '' : cur) + t; }
+      el.innerHTML = '<span>¥</span>' + cur;
+    });
+  });
+</script>
+</body>
+</html>
