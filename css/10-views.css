@@ -30,8 +30,6 @@
 .item .t span{font-size:11.5px;color:var(--ink3)}
 .item .v{font-size:14px;font-weight:400;letter-spacing:.01em}
 .minus{color:var(--ink)} .plus{color:var(--green)}
-.add{margin:16px 22px 0;display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border-radius:16px;border:1px dashed rgba(127,168,212,.5);background:rgba(217,232,246,.35);color:var(--blue-d);font-size:13.5px;cursor:pointer}
-.add:active{background:rgba(217,232,246,.6)}
 .empty{text-align:center;padding:26px 10px 20px;color:var(--ink3);font-size:12.5px;line-height:1.9}
 .empty .big{font-size:34px;opacity:.5;margin-bottom:6px}
 .day-head{display:flex;justify-content:space-between;font-size:12px;color:var(--ink3);padding:16px 2px 2px}
