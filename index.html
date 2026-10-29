@@ -8,10 +8,10 @@
 
 <!-- ========== 样式 ==========
      顺序：基础骨架 → 页面 → 记一笔 → 通用组件 -->
-<link rel="stylesheet" href="css/00-base.css">
-<link rel="stylesheet" href="css/10-views.css">
-<link rel="stylesheet" href="css/20-record.css">
-<link rel="stylesheet" href="css/30-components.css">
+<link rel="stylesheet" href="css/00-base.css?v=20261029">
+<link rel="stylesheet" href="css/10-views.css?v=20261029">
+<link rel="stylesheet" href="css/20-record.css?v=20261029">
+<link rel="stylesheet" href="css/30-components.css?v=20261029">
 </head>
 <body>
 
@@ -135,7 +135,7 @@
         <span class="datepill" id="r-datepill" onclick="openDate()"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="16" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg><span id="r-datelabel">今天</span></span>
       </div>
       <i id="amt-sentinel" style="display:block;height:0"></i>
-      <div class="rec-amount"><span>¥</span><span id="r-amt">0</span></div>
+      <div class="rec-amount"><span class="cur">¥</span><span id="r-amt">0</span><span class="eq" id="r-amthint"></span></div>
       <div class="rec-note" id="r-note" onclick="editNote()">备注：点这里写点什么</div>
       <div class="rec-toggle" onclick="toggleInMonth()">
         <div>计入本月统计<small id="r-imhint">大额支出可关闭，不碰生活费预算与统计</small></div>
@@ -177,23 +177,23 @@
        10-13  视图层
        20-32  功能层
        40-99  路由与启动（99-main.js 必须最后） -->
-<script src="js/00-config.js"></script>
-<script src="js/01-utils.js"></script>
-<script src="js/02-db.js"></script>
-<script src="js/03-domain.js"></script>
-<script src="js/04-ui.js"></script>
+<script src="js/00-config.js?v=20261029"></script>
+<script src="js/01-utils.js?v=20261029"></script>
+<script src="js/02-db.js?v=20261029"></script>
+<script src="js/03-domain.js?v=20261029"></script>
+<script src="js/04-ui.js?v=20261029"></script>
 
-<script src="js/10-home.js"></script>
-<script src="js/11-detail.js"></script>
-<script src="js/12-stat.js"></script>
-<script src="js/13-me.js"></script>
+<script src="js/10-home.js?v=20261029"></script>
+<script src="js/11-detail.js?v=20261029"></script>
+<script src="js/12-stat.js?v=20261029"></script>
+<script src="js/13-me.js?v=20261029"></script>
 
-<script src="js/20-record.js"></script>
-<script src="js/30-budget.js"></script>
-<script src="js/31-categories.js"></script>
-<script src="js/32-backup.js"></script>
+<script src="js/20-record.js?v=20261029"></script>
+<script src="js/30-budget.js?v=20261029"></script>
+<script src="js/31-categories.js?v=20261029"></script>
+<script src="js/32-backup.js?v=20261029"></script>
 
-<script src="js/40-router.js"></script>
-<script src="js/99-main.js"></script>
+<script src="js/40-router.js?v=20261029"></script>
+<script src="js/99-main.js?v=20261029"></script>
 </body>
 </html>

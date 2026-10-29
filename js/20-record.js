@@ -42,7 +42,7 @@ function setType(t){
 }
 function renderRecord(){
   const lp=parents(R.type);
-  document.getElementById('r-amt').textContent=R.amt;
+  renderAmt();
   document.getElementById('r-inmonth').classList.toggle('on',R.inMonth);
   document.getElementById('r-imhint').textContent=R.inMonth?'大额支出可关闭，不碰生活费预算与统计':'不计入本月统计、预算与趋势，只计入总余额';
   const n=document.getElementById('r-note');
@@ -60,7 +60,7 @@ function renderRecord(){
 }
 function updateSaveBtn(){
   /* 必须选到二级且金额 > 0 才可保存 */
-  const ok=!!R.c2&&parseFloat(R.amt)>0;
+  const ok=!!R.c2&&amtValue(R.amt)>0;
   const sv=document.getElementById('r-save');
   sv.classList.toggle('off',!ok);
   sv.textContent=R.id?'保存修改':'保存这一笔';
@@ -70,24 +70,48 @@ function pickC2(id){R.c2=id;renderRecord();}
 /* 「计入本月统计」开关：关闭 = 大额特殊支出，不碰生活费口径，只计入总余额 */
 function toggleInMonth(){R.inMonth=!R.inMonth;renderRecord();}
 function buildKeys(){
-  const ks=['1','2','3','4','5','6','7','8','9','.','0','del'];
-  document.getElementById('r-keys').innerHTML=ks.map(k=>{
-    if(k==='del') return `<button class="fn" onclick="keyPress('del')"><svg width="18" height="18" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><path d="M21 4H8l-5 8 5 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/><path d="M18 9l-6 6M12 9l6 6"/></svg></button>`;
-    return `<button onclick="keyPress('${k}')">${k}</button>`;
-  }).join('');
+  const num=ks=>ks.map(k=>`<button onclick="keyPress('${k}')">${k}</button>`).join('');
+  document.getElementById('r-keys').innerHTML=
+    num(['1','2','3'])+
+    `<button class="kplus" onclick="keyPress('+')">+</button>`+
+    num(['4','5','6','7','8','9'])+
+    `<button class="fn kdel" onclick="keyPress('del')"><svg width="18" height="18" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><path d="M21 4H8l-5 8 5 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/><path d="M18 9l-6 6M12 9l6 6"/></svg></button>`+
+    `<button onclick="keyPress('.')">.</button>`+
+    `<button class="k0" onclick="keyPress('0')">0</button>`;
 }
-/* 键盘规则：小数点只能一次；小数最多两位；首字符 0 时再输数字则替换；删除退格；初始 0 */
+/* 金额算式求值：12.5+8 → 20.5（仅加法，最多 3 个加数） */
+function amtValue(expr){
+  if(!expr)return 0;
+  return expr.split('+').reduce((s,seg)=>{const n=parseFloat(seg);return s+(isFinite(n)?n:0);},0);
+}
+function renderAmt(){
+  const hasAdd=R.amt.indexOf('+')>-1;
+  document.getElementById('r-amt').textContent=R.amt;
+  document.getElementById('r-amthint').textContent=hasAdd?`= ¥${fmt(Math.round(amtValue(R.amt)*100))}`:'';
+  document.querySelector('.rec-amount').classList.toggle('long',R.amt.length>10);
+}
+/* 键盘规则：支持加法；每段小数点只能一次、小数最多两位、段首 0 替换；删除逐字符退格 */
 function keyPress(k){
   let a=R.amt;
+  const segs=a.split('+'), seg=segs[segs.length-1];
   if(k==='del'){a=a.length>1?a.slice(0,-1):'0';}
-  else if(k==='.'){if(a.indexOf('.')>-1)return;a+='.';}
+  else if(k==='+'){
+    if(a==='0'||a.endsWith('+')||a.endsWith('.'))return;   // 加号前必须是完整数字
+    if(segs.length>=3)return;                              // 最多三个加数
+    a+='+';
+  }
+  else if(k==='.'){
+    if(seg===''||seg.indexOf('.')>-1)return;
+    a+='.';
+  }
   else{
-    if(a==='0')a=k;
-    else if(a.indexOf('.')>-1&&a.split('.')[1].length>=2)return;
+    if(seg==='0')a=a.slice(0,-1)+k;
+    else if(seg.indexOf('.')>-1&&seg.split('.')[1].length>=2)return;
+    else if(seg.replace('.','').length>=6)return;          // 每段最多 6 位数字
     else a+=k;
   }
   R.amt=a;
-  document.getElementById('r-amt').textContent=a;
+  renderAmt();
   updateSaveBtn();
 }
 function editNote(){
@@ -146,7 +170,7 @@ function shiftPick(n){const d=pd(pickMonth+'-01');d.setMonth(d.getMonth()+n);pic
 function addOnDay(day){openRecord(null,day);}
 /* 写操作统一入口：写库 → store.refresh() → 广播 */
 async function saveRecord(){
-  const yuan=parseFloat(R.amt);
+  const yuan=amtValue(R.amt);
   if(!(yuan>0)){toast('先输入金额');return;}
   if(!R.c2){toast('选一个二级分类');return;}
   const amount=Math.round(yuan*100);          // 元 → 分，入库前转换
