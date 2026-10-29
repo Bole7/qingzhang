@@ -74,7 +74,11 @@
 
 /* 我的 */
 .me-top{display:flex;align-items:center;gap:14px;padding:6px 22px 0}
-.avatar{width:58px;height:58px;border-radius:20px;background:var(--blue-l);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--blue-d)}
+.avatar{position:relative;width:58px;height:58px;border-radius:20px;background:var(--blue-l);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--blue-d);background-size:cover;background-position:center;cursor:pointer;transition:transform .15s ease}
+.avatar:active{transform:scale(.95)}
+.avatar.has{box-shadow:0 1px 2px rgba(59,76,94,.08)}
+/* 右下角相机角标：让「头像可换」这件事自己说出来 */
+.avatar::after{content:'';position:absolute;right:-2px;bottom:-2px;width:15px;height:15px;border-radius:50%;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235C87B8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 8.5h3.2l1.5-2.2h6.6l1.5 2.2H21v11H3z'/%3E%3Ccircle cx='12' cy='13.6' r='3.1'/%3E%3C/svg%3E") center/8px no-repeat;box-shadow:0 1px 2px rgba(59,76,94,.14)}
 .me-top p{margin:0 0 4px;font-size:16px}
 .me-top span{font-size:12px;color:var(--ink3)}
 .list{margin:20px 22px 0;background:#fff;border:.5px solid var(--line);border-radius:24px;overflow:hidden}

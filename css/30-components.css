@@ -33,3 +33,16 @@
 .rec-toggle small{display:block;font-size:11px;color:var(--ink3);margin-top:2px}
 /* 明细条目「大额」小标（不计入本月统计的记录） */
 .tagx{font-style:normal;font-size:10px;color:var(--ink3);background:#EDF3F9;border-radius:8px;padding:2px 6px;margin-left:6px;vertical-align:1px}
+
+/* ---------- 头像裁剪层（全屏深色，取景框圆角与 .avatar 一致 = 20/58） ---------- */
+.ava-layer{position:fixed;inset:0;z-index:80;display:none;flex-direction:column;background:linear-gradient(180deg,#19222D 0%,#111A24 100%);color:#fff;touch-action:none;padding:calc(env(safe-area-inset-top,0px) + 14px) 22px calc(env(safe-area-inset-bottom,0px) + 22px)}
+.ava-layer.on{display:flex;animation:fade .18s ease}
+.ava-top{display:flex;align-items:center;justify-content:center;height:34px;font-size:14.5px;font-weight:500;letter-spacing:.3px}
+.ava-stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+.ava-vp{position:relative;width:min(280px,72vw);height:min(280px,72vw);border-radius:34.5%;overflow:hidden;background:#111A23;touch-action:none;cursor:grab;box-shadow:0 0 0 1.5px rgba(255,255,255,.5),0 12px 44px rgba(0,0,0,.45)}
+.ava-vp:active{cursor:grabbing}
+.ava-vp img{position:absolute;left:0;top:0;max-width:none;display:block;pointer-events:none;user-select:none;-webkit-user-drag:none;transform-origin:0 0;will-change:transform}
+.ava-tip{margin-top:18px;text-align:center;font-size:11.5px;color:rgba(255,255,255,.46)}
+.ava-acts{display:flex;gap:10px;margin-top:18px}
+.ava-btn{flex:1;padding:14px;border-radius:16px;text-align:center;font-size:14.5px;font-weight:500;background:var(--blue);color:#fff;cursor:pointer}
+.ava-btn.ghost{background:rgba(255,255,255,.13);color:rgba(255,255,255,.85);font-weight:400}

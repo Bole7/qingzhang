@@ -19,4 +19,5 @@ function renderMe(){
   document.getElementById('m-avg').textContent=fmt0(Math.round(out/passed));
   document.getElementById('m-balance').textContent=fmt0(bal);
   document.getElementById('m-cat-em').textContent=`${parents('expense').length} 个`;
+  renderAvatar();
 }

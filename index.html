@@ -8,10 +8,10 @@
 
 <!-- ========== 样式 ==========
      顺序：基础骨架 → 页面 → 记一笔 → 通用组件 -->
-<link rel="stylesheet" href="css/00-base.css?v=20261029e">
-<link rel="stylesheet" href="css/10-views.css?v=20261029e">
-<link rel="stylesheet" href="css/20-record.css?v=20261029e">
-<link rel="stylesheet" href="css/30-components.css?v=20261029e">
+<link rel="stylesheet" href="css/00-base.css?v=20261029f">
+<link rel="stylesheet" href="css/10-views.css?v=20261029f">
+<link rel="stylesheet" href="css/20-record.css?v=20261029f">
+<link rel="stylesheet" href="css/30-components.css?v=20261029f">
 </head>
 <body>
 
@@ -109,7 +109,7 @@
     <div class="status"><span id="clock4">--:--</span><span>我的</span></div>
     <div class="bodyz">
       <div class="me-top">
-        <div class="avatar">轻</div>
+        <div class="avatar" id="m-avatar" title="点击更换头像" onclick="openAvatar()">轻</div>
         <div><p>阿发的账本</p><span id="m-streak">已连续记账 0 天</span></div>
       </div>
       <div class="sum">
@@ -170,6 +170,21 @@
 <div class="sheet" id="sheet"></div>
 <div class="toast" id="toast"></div>
 
+<!-- 头像裁剪（全屏层：可拖动、双指/滚轮缩放的方形取景框，圆角与「我的」头像一致） -->
+<div class="ava-layer" id="ava-layer" onpointermove="avaMove(event)" onpointerup="avaUp(event)" onpointercancel="avaUp(event)" onwheel="avaWheel(event)">
+  <div class="ava-top">调整头像</div>
+  <div class="ava-stage">
+    <div class="ava-vp" id="ava-vp" onpointerdown="avaDown(event)"><img id="ava-img" alt=""></div>
+  </div>
+  <div class="ava-tip">拖动调整位置 · 双指或滚轮缩放</div>
+  <div class="ava-acts">
+    <div class="ava-btn ghost" onclick="avaClose()">取消</div>
+    <div class="ava-btn" onclick="avaApply()">使用</div>
+  </div>
+</div>
+<!-- 系统相册入口：视觉隐藏但保留布局盒，iOS 对 display:none 的 file input 可能不响应 click() -->
+<input type="file" id="ava-pick" accept="image/*" style="position:fixed;left:-100px;top:-100px;width:1px;height:1px;opacity:0" onchange="avaPick(this)">
+
 <!-- ========== 第三方库（本地副本，完全离线可用，不依赖 CDN） ========== -->
 <script src="vendor/dexie.min.js"></script>
 <script src="vendor/chart.umd.min.js"></script>
@@ -180,23 +195,24 @@
        10-13  视图层
        20-32  功能层
        40-99  路由与启动（99-main.js 必须最后） -->
-<script src="js/00-config.js?v=20261029e"></script>
-<script src="js/01-utils.js?v=20261029e"></script>
-<script src="js/02-db.js?v=20261029e"></script>
-<script src="js/03-domain.js?v=20261029e"></script>
-<script src="js/04-ui.js?v=20261029e"></script>
+<script src="js/00-config.js?v=20261029f"></script>
+<script src="js/01-utils.js?v=20261029f"></script>
+<script src="js/02-db.js?v=20261029f"></script>
+<script src="js/03-domain.js?v=20261029f"></script>
+<script src="js/04-ui.js?v=20261029f"></script>
 
-<script src="js/10-home.js?v=20261029e"></script>
-<script src="js/11-detail.js?v=20261029e"></script>
-<script src="js/12-stat.js?v=20261029e"></script>
-<script src="js/13-me.js?v=20261029e"></script>
+<script src="js/10-home.js?v=20261029f"></script>
+<script src="js/11-detail.js?v=20261029f"></script>
+<script src="js/12-stat.js?v=20261029f"></script>
+<script src="js/13-me.js?v=20261029f"></script>
+<script src="js/14-avatar.js?v=20261029f"></script>
 
-<script src="js/20-record.js?v=20261029e"></script>
-<script src="js/30-budget.js?v=20261029e"></script>
-<script src="js/31-categories.js?v=20261029e"></script>
-<script src="js/32-backup.js?v=20261029e"></script>
+<script src="js/20-record.js?v=20261029f"></script>
+<script src="js/30-budget.js?v=20261029f"></script>
+<script src="js/31-categories.js?v=20261029f"></script>
+<script src="js/32-backup.js?v=20261029f"></script>
 
-<script src="js/40-router.js?v=20261029e"></script>
-<script src="js/99-main.js?v=20261029e"></script>
+<script src="js/40-router.js?v=20261029f"></script>
+<script src="js/99-main.js?v=20261029f"></script>
 </body>
 </html>
