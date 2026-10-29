@@ -39,7 +39,8 @@ function renderStat(){
     data=group(subRs,r=>{const c=catById(r.categoryId);return c?c.name:'';});
     total=subRs.reduce((a,b)=>a+b.amount,0);
     centerLabel=pc.name;
-    document.getElementById('s-title').textContent=sc?`${pc.name} · ${sc.name}`:`${pc.name} · 二级构成`;
+    /* 标题只显示分类名：一级视图 = 一级分类名，三级视图 = 一级 · 二级 */
+    document.getElementById('s-title').textContent=sc?`${pc.name} · ${sc.name}`:pc.name;
   }else{
     data=group(rs,r=>{const c=catById(r.categoryId);const p=parentOf(c);return p?p.name:'';});
     total=rs.reduce((a,b)=>a+b.amount,0);
