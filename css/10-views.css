@@ -68,6 +68,9 @@
 .lg{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink2);cursor:pointer}
 .dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
 .lg b{margin-left:auto;color:var(--ink);font-weight:500}
+/* 三级下钻时高亮当前选中的二级分类（box-shadow 撑背景，不影响布局） */
+.lg.on{color:var(--blue-d);font-weight:500;border-radius:8px;box-shadow:0 0 0 6px #EDF3F9;background:#EDF3F9}
+.lg.on b{color:var(--blue-d)}
 .back{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;color:var(--blue-d);cursor:pointer;padding:0 22px}
 .stitle{padding:6px 22px 4px;font-size:19px;display:flex;align-items:center;gap:10px}
 

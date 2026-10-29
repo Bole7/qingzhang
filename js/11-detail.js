@@ -73,6 +73,6 @@ function pickDay(day,el){
 function shiftMonth(n){
   const d=pd(curMonth+'-01'); d.setMonth(d.getMonth()+n);
   curMonth=dateKey(d).slice(0,7);
-  drill=null;
+  drill=null;drillSub=null;
   renderDetail();renderStat();
 }

@@ -18,11 +18,13 @@ function openRecord(id,presetDate){
     R={id:r.id,type:r.type,amt:(r.amount/100).toString(),date:r.date,time:r.time,note:r.note||'',c1:p?p.id:'',c2:r.categoryId,inMonth:r.inMonth!==false};
     document.getElementById('r-title').textContent='编辑';
     document.getElementById('r-cancel').textContent='删除这一笔';
+    document.getElementById('r-back').style.display='inline';
   }else{
     const lp=parents('expense')[0], ls=lp?subsOf(lp.id):[];
     R={id:null,type:'expense',amt:'0',date:presetDate||TODAY,time:timeKey(),note:'',c1:lp?lp.id:'',c2:ls[0]?ls[0].id:'',inMonth:true};
     document.getElementById('r-title').textContent='记一笔';
     document.getElementById('r-cancel').textContent='取消';
+    document.getElementById('r-back').style.display='none';
   }
   document.getElementById('seg-e').classList.toggle('on',R.type==='expense');
   document.getElementById('seg-i').classList.toggle('on',R.type==='income');

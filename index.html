@@ -8,10 +8,10 @@
 
 <!-- ========== 样式 ==========
      顺序：基础骨架 → 页面 → 记一笔 → 通用组件 -->
-<link rel="stylesheet" href="css/00-base.css?v=20261029">
-<link rel="stylesheet" href="css/10-views.css?v=20261029">
-<link rel="stylesheet" href="css/20-record.css?v=20261029">
-<link rel="stylesheet" href="css/30-components.css?v=20261029">
+<link rel="stylesheet" href="css/00-base.css?v=20261029b">
+<link rel="stylesheet" href="css/10-views.css?v=20261029b">
+<link rel="stylesheet" href="css/20-record.css?v=20261029b">
+<link rel="stylesheet" href="css/30-components.css?v=20261029b">
 </head>
 <body>
 
@@ -89,13 +89,20 @@
         <div style="flex:0 0 auto;width:150px;height:150px"><canvas id="donutCv"></canvas></div>
         <div class="legend" id="s-legend"></div>
       </div>
-      <div class="card" style="margin-top:20px">
-        <div class="card-head"><h3 id="s-daytitle">每日支出</h3><span style="font-size:11.5px;color:var(--ink3)">单位 元</span></div>
-        <div style="height:150px;padding-top:8px"><canvas id="dayCv"></canvas></div>
+      <div id="s-charts">
+        <div class="card" style="margin-top:20px">
+          <div class="card-head"><h3 id="s-daytitle">每日支出</h3><span style="font-size:11.5px;color:var(--ink3)">单位 元</span></div>
+          <div style="height:150px;padding-top:8px"><canvas id="dayCv"></canvas></div>
+        </div>
+        <div class="card" style="margin-top:20px">
+          <div class="card-head"><h3>近 6 个月趋势</h3><span style="font-size:11.5px;color:var(--ink3)">单位 元</span></div>
+          <div style="height:170px;padding-top:8px"><canvas id="barCv"></canvas></div>
+        </div>
       </div>
-      <div class="card" style="margin-top:20px">
-        <div class="card-head"><h3>近 6 个月趋势</h3><span style="font-size:11.5px;color:var(--ink3)">单位 元</span></div>
-        <div style="height:170px;padding-top:8px"><canvas id="barCv"></canvas></div>
+      <!-- 三级下钻（二级分类）：用当月逐条流水替换下方两个图表 -->
+      <div class="card" id="s-rec" style="margin-top:20px;display:none">
+        <div class="card-head"><h3 id="s-dtitle">明细</h3><span id="s-dsum" style="font-size:11.5px;color:var(--ink3)"></span></div>
+        <div id="s-rlist" style="margin-top:4px"></div>
       </div>
     </div>
   </section>
@@ -148,7 +155,7 @@
       </div>
       <div class="keys" id="r-keys"></div>
       <div class="save off" id="r-save" onclick="saveRecord()">保存这一笔</div>
-      <div style="text-align:center;padding:4px 0 8px"><span id="r-cancel" style="font-size:12.5px;color:var(--ink3);cursor:pointer">取消</span></div>
+      <div style="text-align:center;padding:4px 0 8px"><span id="r-back" style="display:none;font-size:12.5px;color:var(--blue-d);cursor:pointer;margin-right:22px" onclick="closeRecord()">返回</span><span id="r-cancel" style="font-size:12.5px;color:var(--ink3);cursor:pointer">取消</span></div>
     </div>
   </section>
 
@@ -177,23 +184,23 @@
        10-13  视图层
        20-32  功能层
        40-99  路由与启动（99-main.js 必须最后） -->
-<script src="js/00-config.js?v=20261029"></script>
-<script src="js/01-utils.js?v=20261029"></script>
-<script src="js/02-db.js?v=20261029"></script>
-<script src="js/03-domain.js?v=20261029"></script>
-<script src="js/04-ui.js?v=20261029"></script>
+<script src="js/00-config.js?v=20261029b"></script>
+<script src="js/01-utils.js?v=20261029b"></script>
+<script src="js/02-db.js?v=20261029b"></script>
+<script src="js/03-domain.js?v=20261029b"></script>
+<script src="js/04-ui.js?v=20261029b"></script>
 
-<script src="js/10-home.js?v=20261029"></script>
-<script src="js/11-detail.js?v=20261029"></script>
-<script src="js/12-stat.js?v=20261029"></script>
-<script src="js/13-me.js?v=20261029"></script>
+<script src="js/10-home.js?v=20261029b"></script>
+<script src="js/11-detail.js?v=20261029b"></script>
+<script src="js/12-stat.js?v=20261029b"></script>
+<script src="js/13-me.js?v=20261029b"></script>
 
-<script src="js/20-record.js?v=20261029"></script>
-<script src="js/30-budget.js?v=20261029"></script>
-<script src="js/31-categories.js?v=20261029"></script>
-<script src="js/32-backup.js?v=20261029"></script>
+<script src="js/20-record.js?v=20261029b"></script>
+<script src="js/30-budget.js?v=20261029b"></script>
+<script src="js/31-categories.js?v=20261029b"></script>
+<script src="js/32-backup.js?v=20261029b"></script>
 
-<script src="js/40-router.js?v=20261029"></script>
-<script src="js/99-main.js?v=20261029"></script>
+<script src="js/40-router.js?v=20261029b"></script>
+<script src="js/99-main.js?v=20261029b"></script>
 </body>
 </html>
