@@ -42,6 +42,6 @@ function renderHome(){
   const list=store.state.records.filter(r=>r.date===TODAY).sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
   document.getElementById('h-list').innerHTML = list.length
     ? list.map(r=>itemHtml(r)).join('')
-    : `<div class="empty"><div class="big">◌</div>今天还没有记账<br>点下面这行，写下第一笔</div>`;
+    : `<div class="empty"><div class="big">◌</div>今天还没有记账<br>点底部的 ＋ 记下第一笔</div>`;
   bindItems('h-list');
 }
