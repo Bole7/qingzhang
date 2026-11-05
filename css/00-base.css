@@ -33,7 +33,11 @@ button{font-family:inherit}
 .view.on{display:block;animation:fade .3s ease}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .status{height:52px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 22px 10px;font-size:var(--t-body);font-weight:500;position:relative;z-index:3}
-.wash{position:absolute;top:0;left:50%;transform:translateX(-50%);pointer-events:none;mix-blend-mode:multiply;z-index:1}
+/* 水彩只做顶部气氛：110px 内完整保留，向下到 268px 淡尽，
+   避免深浅不一的底色吃掉 hero 数字和 11px 附注的对比度 */
+.wash{position:absolute;top:0;left:50%;transform:translateX(-50%);pointer-events:none;mix-blend-mode:multiply;z-index:1;
+  -webkit-mask-image:linear-gradient(to bottom,#000 0,#000 108px,rgba(0,0,0,.42) 188px,transparent 268px);
+  mask-image:linear-gradient(to bottom,#000 0,#000 108px,rgba(0,0,0,.42) 188px,transparent 268px)}
 .grain{position:fixed;inset:0;pointer-events:none;opacity:.05;mix-blend-mode:multiply;z-index:2}
 .bodyz{position:relative;z-index:3}
 
