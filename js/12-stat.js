@@ -8,7 +8,7 @@
  * 渲染：统计（Chart.js 环形图 + 柱状图；只 update 不 destroy）
  * ================================================================== */
 let drill=null, drillSub=null, donutChart=null, barChart=null, dayChart=null, donutKeys=[], recMode=false;
-/* 环形图中心文字插件 */
+/* 环形图中心文字插件：总额是这页的 P1，用 32px 起，按内圈宽度自适应降级 */
 const centerTextPlugin={
   id:'ctext',
   afterDraw(chart){
@@ -16,9 +16,13 @@ const centerTextPlugin={
     if(!o) return;
     const {ctx}=chart, a=chart.chartArea;
     const cx=(a.left+a.right)/2, cy=(a.top+a.bottom)/2;
+    const maxW=(a.right-a.left)*0.52;
+    let fs=32;
     ctx.save();ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillStyle='#3B4C5E';ctx.font='300 20px sans-serif';ctx.fillText(o.line1,cx,cy-7);
-    ctx.fillStyle='#A9B7C4';ctx.font='11px sans-serif';ctx.fillText(o.line2,cx,cy+13);
+    ctx.font=`500 ${fs}px sans-serif`;
+    while(fs>20 && ctx.measureText(o.line1).width>maxW){ fs-=2; ctx.font=`500 ${fs}px sans-serif`; }
+    ctx.fillStyle='#2E3E4E';ctx.fillText(o.line1,cx,cy-fs*0.23);
+    ctx.fillStyle='#8A9BA9';ctx.font='11px sans-serif';ctx.fillText(o.line2,cx,cy+fs*0.60);
     ctx.restore();
   }
 };
@@ -80,7 +84,7 @@ function renderStat(){
   document.getElementById('s-legend').innerHTML = data.length
     ? data.map((d,i)=>`<div class="lg ${selIdx===i?'on':''}" onclick="onLegendIdx(${i})">
         <i class="dot" style="background:${PIE[i%PIE.length]}"></i>${esc(d[0])} ${Math.round(d[1]/total*100)}%<b>${fmt0(d[1])}</b></div>`).join('')
-    : `<div style="color:var(--ink3);font-size:13.5px">本月还没有支出记录</div>`;
+    : `<div style="color:var(--ink2);font-size:13.5px">本月还没有支出记录</div>`;
 
   /* 当月每日支出柱状图：只算「计入本月统计」的支出；查看本月时只画到今天，今天高亮 */
   const dim=pd(curMonth+'-01');
@@ -103,7 +107,7 @@ function renderStat(){
         title:items=>`${dim.getMonth()+1}月${items[0].label}日`,
         label:c=>` ¥${fmt(Math.round(c.parsed.y*100))}`}}},
       scales:{x:{grid:{display:false},border:{display:false},
-                ticks:{color:'#A9B7C4',font:{size:10},autoSkip:false,maxRotation:0,
+                ticks:{color:'#8A9BA9',font:{size:10},autoSkip:false,maxRotation:0,
                   callback:function(v){const l=+this.getLabelForValue(v);return (l===1||l%5===0)?l:'';}}},
               y:{display:false,beginAtZero:true}}}
   };
@@ -121,7 +125,7 @@ function renderStat(){
         backgroundColor:months.map(mm=>mm===curMonth?'#7FA8D4':'#C9DFF2')}]},
     options:{maintainAspectRatio:false,
       plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ¥${fmt(Math.round(c.parsed.y*100))}`}}},
-      scales:{x:{grid:{display:false},border:{display:false},ticks:{color:'#A9B7C4',font:{size:11}}},
+      scales:{x:{grid:{display:false},border:{display:false},ticks:{color:'#8A9BA9',font:{size:11}}},
               y:{display:false,beginAtZero:true}}}
   };
   if(!barChart){ barChart=new Chart(document.getElementById('barCv'),bcfg); }

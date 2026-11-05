@@ -10,7 +10,7 @@
 .sheet.on{display:block;animation:up .28s cubic-bezier(.2,.8,.3,1)}
 @keyframes up{from{transform:translate(-50%,100%)}to{transform:translate(-50%,0)}}
 .sheet h4{margin:0 0 4px;font-size:var(--t-card);font-weight:500;text-align:center}
-.sheet .desc{margin:0 0 16px;font-size:var(--t-cap);color:var(--ink3);text-align:center}
+.sheet .desc{margin:0 0 16px;font-size:var(--t-cap);color:var(--ink2);text-align:center}
 .field{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:.5px solid #F0F5FA;font-size:var(--t-body)}
 .field label{width:64px;color:var(--ink2);font-size:var(--t-body);flex:0 0 auto}
 .field input{flex:1;border:0;outline:0;font-size:var(--t-card);font-family:inherit;color:var(--ink);background:none;min-width:0}
@@ -31,7 +31,7 @@
 .switch.on i{left:21px}
 /* 记一笔页「计入本月统计」开关行 */
 .rec-toggle{margin:10px 22px 0;display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-radius:16px;background:rgba(255,255,255,.8);border:.5px solid var(--line);font-size:var(--t-body);cursor:pointer}
-.rec-toggle small{display:block;font-size:var(--t-cap);color:var(--ink3);margin-top:2px}
+.rec-toggle small{display:block;font-size:var(--t-cap);color:var(--ink2);margin-top:2px}
 /* 明细条目「大额」小标（不计入本月统计的记录） */
 .tagx{font-style:normal;font-size:var(--t-cap);color:var(--ink3);background:#EDF3F9;border-radius:8px;padding:2px 6px;margin-left:6px;vertical-align:1px}
 

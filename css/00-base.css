@@ -3,19 +3,22 @@
  * 全局基础：CSS 变量、重置、页面骨架、底部导航
  * ================================================================ */
 :root{
-  --ink:#3B4C5E; --ink2:#7A8B9C; --ink3:#A9B7C4;
+  /* ---- 灰阶三档（对白底对比度）----
+     ink 10.9:1 正文 / ink2 4.6:1 次级信息（过 AA 正文线）/ ink3 2.9:1 仅分隔与计数
+     11px 的文字优先用 ink2，ink3 留给「日期分组头、单位、笔数」这类不看也不影响理解的元信息 */
+  --ink:#2E3E4E; --ink2:#63778A; --ink3:#8A9BA9;
   --blue:#7FA8D4; --blue-d:#5C87B8; --blue-l:#D9E8F6; --blue-xl:#EDF4FB;
   --paper:#F8FBFE;
-  --green:#8CC2A4; --coral:#EFA98F; --sand:#EBD3A0; --lilac:#B9B6DC;
-  --red:#D97070;
+  --green:#4E9376; --coral:#EFA98F; --sand:#EBD3A0; --lilac:#B9B6DC;
+  --red:#C96A6A;
   --line:rgba(127,168,212,.22);
 
-  /* ---- 字号刻度：全站只此五档 ----
-     display 56 · title 20 · card 16 · body 13.5 · caption 11
-     相邻比值 1.19 / 1.25 / 1.25，最大 5.1×。
-     新增文字先选档位，不要随手写 px——微差（12 与 12.5）在人眼里等于同级。
-     hero 是 display 的缩小版，只用于「记一笔」输入金额（要留给键盘空间）。 */
-  --t-display:56px; --t-hero:44px; --t-title:20px; --t-card:16px; --t-body:13.5px; --t-cap:11px;
+  /* ---- 字号刻度：全站只此七档 ----
+     display 56（首页 hero）· hero 44（记一笔输入）· sub 32（页内 P1）
+     title 20（页面标题）· card 16（卡片标题/行内金额）· body 13.5（正文）· caption 11（附注）
+     相邻比值 1.19–1.75，最大 5.1×。
+     新增文字先选档位，不要随手写 px——微差（12 与 12.5）在人眼里等于同级。 */
+  --t-display:56px; --t-hero:44px; --t-sub:32px; --t-title:20px; --t-card:16px; --t-body:13.5px; --t-cap:11px;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
