@@ -16,14 +16,14 @@ function openBudget(){
     const pct=lim?Math.min(100,spent/lim*100):0;
     const color=!lim?'var(--blue)':(pct>100?'var(--red)':(pct>=80?'var(--coral)':'var(--blue)'));
     return `<div class="brow">${icoHtml(c)}<div style="flex:1;min-width:0">
-        <div style="display:flex;justify-content:space-between;font-size:12.5px"><span>${esc(c.name)}</span>
-        <span style="color:${lim&&spent>lim?'var(--red)':'var(--ink3)'};font-size:11.5px">${lim?fmt(spent)+' / '+fmt(lim)+(spent>lim?' · 超 '+fmt(spent-lim):''):'未设'}</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:13.5px"><span>${esc(c.name)}</span>
+        <span style="color:${lim&&spent>lim?'var(--red)':'var(--ink3)'};font-size:11px">${lim?fmt(spent)+' / '+fmt(lim)+(spent>lim?' · 超 '+fmt(spent-lim):''):'未设'}</span></div>
         <div class="bar" style="margin-top:6px;height:5px"><i style="width:${lim?pct:0}%;background:${color}"></i></div></div>
       <input type="number" inputmode="decimal" placeholder="额度" data-cat="${c.id}" value="${lim?lim/100:''}"></div>`;
   }).join('');
   sheet(`<h4>预算与提醒</h4><p class="desc">本月没设的会沿用上个月；填 0 或留空即不设</p>
     <div class="field"><label>月总预算</label><input type="number" inputmode="decimal" id="bi" placeholder="0" value="${total?total/100:''}"></div>
-    <div style="padding-top:8px;font-size:12px;color:var(--ink3)">分类预算（一级）</div>
+    <div style="padding-top:8px;font-size:11px;color:var(--ink3)">分类预算（一级）</div>
     ${rows}
     <div class="btn" onclick="confirmBudget()">保存</div>`);
 }

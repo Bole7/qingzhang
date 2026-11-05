@@ -8,10 +8,10 @@
  * 分类管理（两级；删除用 archived 软删除，历史流水仍引用）
  * ================================================================== */
 function openCats(){
-  const sec=(type,label)=>`<div style="padding:14px 0 4px;font-size:12px;color:var(--ink3)">${label}</div>`+
+  const sec=(type,label)=>`<div style="padding:14px 0 4px;font-size:11px;font-weight:500;color:var(--ink3)">${label}</div>`+
     parents(type).map(c=>`<div class="field" onclick="editCat('${c.id}')" style="cursor:pointer">
-      ${icoHtml(c)}<div style="flex:1;min-width:0"><div>${esc(c.name)}</div>
-      <div style="font-size:11.5px;color:var(--ink3);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${subsOf(c.id).map(s=>esc(s.name)).join(' · ')}</div></div>
+      ${icoHtml(c)}<div style="flex:1;min-width:0"><div style="font-weight:500">${esc(c.name)}</div>
+      <div style="font-size:11px;color:var(--ink3);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${subsOf(c.id).map(s=>esc(s.name)).join(' · ')}</div></div>
       <span style="color:var(--ink3)">›</span></div>`).join('')+
     `<div class="btn ghost" onclick="addCat('${type}')">＋ 添加${label}一级分类</div>`;
   sheet(`<h4>分类管理</h4><p class="desc">点一级分类管理它的二级分类</p>${sec('expense','支出')}${sec('income','收入')}`);

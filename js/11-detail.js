@@ -29,7 +29,7 @@ function renderDetail(){
     const ex=sumBy(arr.filter(r=>!counted(r)),'expense');   // 当日不计入的大额支出
     const dd=pd(day);
     const label=day===TODAY?'今天':(day===dateKey(addDay(new Date(),-1))?'昨天':'');
-    const right=(i>0?`收 ${fmt0(i)}`:`支 ${fmt(o)}`)+(ex>0?`<span style="font-size:10px;color:var(--ink3)"> 大额${fmt0(ex)}</span>`:'');
+    const right=(i>0?`收 ${fmt0(i)}`:`支 ${fmt(o)}`)+(ex>0?`<span style="font-size:11px;color:var(--ink3)"> 大额${fmt0(ex)}</span>`:'');
     return `<div class="day-head" id="d-${day}"><span>${dd.getMonth()+1}月${dd.getDate()}日 ${label}</span><span style="display:flex;align-items:center;gap:8px"><span>${right}</span><button class="dayadd" title="在这一天记一笔" onclick="addOnDay('${day}')">＋</button></span></div>`
       + arr.map(r=>itemHtml(r)).join('');
   }).join('') : `<div class="empty"><div class="big">◌</div>这个月还没有记录<br>点中间的 ＋ 记一笔</div>`;

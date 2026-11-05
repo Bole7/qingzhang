@@ -9,27 +9,34 @@
   --green:#8CC2A4; --coral:#EFA98F; --sand:#EBD3A0; --lilac:#B9B6DC;
   --red:#D97070;
   --line:rgba(127,168,212,.22);
+
+  /* ---- 字号刻度：全站只此五档 ----
+     display 56 · title 20 · card 16 · body 13.5 · caption 11
+     相邻比值 1.19 / 1.25 / 1.25，最大 5.1×。
+     新增文字先选档位，不要随手写 px——微差（12 与 12.5）在人眼里等于同级。
+     hero 是 display 的缩小版，只用于「记一笔」输入金额（要留给键盘空间）。 */
+  --t-display:56px; --t-hero:44px; --t-title:20px; --t-card:16px; --t-body:13.5px; --t-cap:11px;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
 body{
   margin:0;background:var(--paper);color:var(--ink);
   font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",-apple-system,system-ui,sans-serif;
-  font-weight:400;font-size:13.5px;letter-spacing:.01em;
+  font-weight:400;font-size:var(--t-body);letter-spacing:.01em;
 }
 button{font-family:inherit}
 .app{max-width:480px;margin:0 auto;min-height:100vh;position:relative;background:var(--blue-xl);overflow-x:hidden;overflow-x:clip}
 .view{display:none;position:relative;min-height:100vh;padding-bottom:120px}
 .view.on{display:block;animation:fade .3s ease}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.status{height:52px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 22px 10px;font-size:13px;font-weight:500;position:relative;z-index:3}
+.status{height:52px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 22px 10px;font-size:var(--t-body);font-weight:500;position:relative;z-index:3}
 .wash{position:absolute;top:0;left:50%;transform:translateX(-50%);pointer-events:none;mix-blend-mode:multiply;z-index:1}
 .grain{position:fixed;inset:0;pointer-events:none;opacity:.05;mix-blend-mode:multiply;z-index:2}
 .bodyz{position:relative;z-index:3}
 
 /* 导航 */
 .tabbar{position:fixed;left:50%;transform:translateX(-50%);bottom:12px;width:calc(100% - 24px);max-width:456px;height:74px;background:rgba(255,255,255,.94);border:.5px solid var(--line);border-radius:26px;display:flex;align-items:center;justify-content:space-around;z-index:30}
-.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10.5px;color:var(--ink3);cursor:pointer;background:none;border:0;padding:0}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:var(--t-cap);color:var(--ink3);cursor:pointer;background:none;border:0;padding:0}
 .tab.on{color:var(--blue-d)}
 .tab svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
 .fab{width:52px;height:52px;border-radius:19px;background:var(--blue);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 18px rgba(127,168,212,.42);cursor:pointer;margin-top:-6px;border:0}

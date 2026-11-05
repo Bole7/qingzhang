@@ -52,7 +52,7 @@ function renderRecord(){
   n.classList.toggle('has',!!R.note);
   document.getElementById('r-cats').innerHTML=lp.map(c=>
     `<button class="cat ${c.id===R.c1?'on':''}" onclick="pickC1('${c.id}')">${icoHtml(c)}<span>${esc(c.name)}</span></button>`).join('')
-    +`<button class="cat" onclick="addCatQuick()"><div class="ico" style="background:rgba(217,232,246,.5);color:var(--blue-d);border:1px dashed rgba(127,168,212,.55);font-size:18px">＋</div><span>添加</span></button>`;
+    +`<button class="cat" onclick="addCatQuick()"><div class="ico" style="background:rgba(217,232,246,.5);color:var(--blue-d);border:1px dashed rgba(127,168,212,.55);font-size:20px">＋</div><span>添加</span></button>`;
   const cur=lp.find(c=>c.id===R.c1)||lp[0];
   const subs=cur?subsOf(cur.id):[];
   document.getElementById('r-sublabel').textContent=cur?`${cur.name} · 二级分类`:'请先创建分类';

@@ -80,7 +80,7 @@ function renderStat(){
   document.getElementById('s-legend').innerHTML = data.length
     ? data.map((d,i)=>`<div class="lg ${selIdx===i?'on':''}" onclick="onLegendIdx(${i})">
         <i class="dot" style="background:${PIE[i%PIE.length]}"></i>${esc(d[0])} ${Math.round(d[1]/total*100)}%<b>${fmt0(d[1])}</b></div>`).join('')
-    : `<div style="color:var(--ink3);font-size:12.5px">本月还没有支出记录</div>`;
+    : `<div style="color:var(--ink3);font-size:13.5px">本月还没有支出记录</div>`;
 
   /* 当月每日支出柱状图：只算「计入本月统计」的支出；查看本月时只画到今天，今天高亮 */
   const dim=pd(curMonth+'-01');
@@ -147,7 +147,7 @@ function renderSubList(sc){
     ? rs.map(r=>{
         const d=pd(r.date), wd='日一二三四五六'[d.getDay()];
         return `<div class="item" data-id="${r.id}">
-          <div class="ico" style="background:#EAF2FA;color:#5C87B8;font-size:14px">${d.getDate()}</div>
+          <div class="ico" style="background:#EAF2FA;color:#5C87B8;font-size:16px">${d.getDate()}</div>
           <div class="t"><p>${esc(r.note||sc.name)}</p><span>${d.getMonth()+1}月${d.getDate()}日 周${wd}</span></div>
           <div class="v minus">-${fmt(r.amount)}</div>
         </div>`;
