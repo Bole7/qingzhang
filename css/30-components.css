@@ -6,7 +6,7 @@
 /* 弹层 */
 .mask{position:fixed;inset:0;background:rgba(59,76,94,.28);z-index:50;display:none}
 .mask.on{display:block;animation:fade .2s ease}
-.sheet{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:480px;z-index:60;background:#fff;border-radius:28px 28px 0 0;padding:18px 22px 34px;display:none;max-height:76%;overflow-y:auto}
+.sheet{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:480px;z-index:60;background:var(--surface);border-radius:28px 28px 0 0;padding:18px 22px 34px;display:none;max-height:76%;overflow-y:auto}
 .sheet.on{display:block;animation:up .28s cubic-bezier(.2,.8,.3,1)}
 @keyframes up{from{transform:translate(-50%,100%)}to{transform:translate(-50%,0)}}
 .sheet h4{margin:0 0 4px;font-size:var(--t-card);font-weight:500;text-align:center}
@@ -30,7 +30,7 @@
 .switch.on{background:var(--blue)}
 .switch.on i{left:21px}
 /* 记一笔页「计入本月统计」开关行 */
-.rec-toggle{margin:10px 22px 0;display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-radius:16px;background:rgba(255,255,255,.8);border:.5px solid var(--line);font-size:var(--t-body);cursor:pointer}
+.rec-toggle{margin:10px 22px 0;display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-radius:16px;background:var(--surface-soft);border:.5px solid var(--line);font-size:var(--t-body);cursor:pointer}
 .rec-toggle small{display:block;font-size:var(--t-cap);color:var(--ink2);margin-top:2px}
 /* 明细条目「大额」小标（不计入本月统计的记录） */
 .tagx{font-style:normal;font-size:var(--t-cap);color:var(--ink3);background:#EDF3F9;border-radius:8px;padding:2px 6px;margin-left:6px;vertical-align:1px}

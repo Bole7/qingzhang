@@ -8,10 +8,10 @@
 
 <!-- ========== 样式 ==========
      顺序：基础骨架 → 页面 → 记一笔 → 通用组件 -->
-<link rel="stylesheet" href="css/00-base.css?v=20261105e">
-<link rel="stylesheet" href="css/10-views.css?v=20261105e">
-<link rel="stylesheet" href="css/20-record.css?v=20261105e">
-<link rel="stylesheet" href="css/30-components.css?v=20261105e">
+<link rel="stylesheet" href="css/00-base.css?v=20261105g">
+<link rel="stylesheet" href="css/10-views.css?v=20261105g">
+<link rel="stylesheet" href="css/20-record.css?v=20261105g">
+<link rel="stylesheet" href="css/30-components.css?v=20261105g">
 </head>
 <body>
 
@@ -19,6 +19,25 @@
   <defs>
     <filter id="wc" x="-15%" y="-15%" width="130%" height="130%"><feTurbulence type="fractalNoise" baseFrequency="0.021" numOctaves="3" seed="9" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="26" xChannelSelector="R" yChannelSelector="G"/><feGaussianBlur stdDeviation="1.8"/></filter>
     <filter id="wc2" x="-15%" y="-15%" width="130%" height="130%"><feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="14" xChannelSelector="R" yChannelSelector="G"/><feGaussianBlur stdDeviation="1.4"/></filter>
+    <!-- 首页专用：位移形成自然边缘，细颗粒只扰动透明度，露出纸面而不把颜色弄灰 -->
+    <filter id="wc-home" x="-15%" y="-15%" width="130%" height="130%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.018 0.032" numOctaves="3" seed="9" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="24" xChannelSelector="R" yChannelSelector="G" result="d"/>
+      <feGaussianBlur in="d" stdDeviation=".45" result="b"/>
+      <feTurbulence type="fractalNoise" baseFrequency=".62" numOctaves="2" seed="12" result="g"/>
+      <feColorMatrix in="g" type="saturate" values="0" result="gm"/>
+      <feComponentTransfer in="gm" result="ga"><feFuncA type="linear" slope="1.15" intercept=".3"/></feComponentTransfer>
+      <feComposite in="b" in2="ga" operator="in"/>
+    </filter>
+    <!-- 小水痕保留稍清楚的干边，不再叠高斯模糊 -->
+    <filter id="wc-home-dry" x="-15%" y="-15%" width="130%" height="130%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.028 0.05" numOctaves="2" seed="3" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="14" xChannelSelector="R" yChannelSelector="G" result="d"/>
+      <feTurbulence type="fractalNoise" baseFrequency=".78" numOctaves="2" seed="5" result="g"/>
+      <feColorMatrix in="g" type="saturate" values="0" result="gm"/>
+      <feComponentTransfer in="gm" result="ga"><feFuncA type="linear" slope="1.3" intercept=".25"/></feComponentTransfer>
+      <feComposite in="d" in2="ga" operator="in"/>
+    </filter>
     <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2"/></filter>
   </defs>
 </svg>
@@ -27,7 +46,18 @@
 
   <!-- 首页 -->
   <section class="view on" id="v-home">
-    <svg class="wash" width="390" height="330" viewBox="0 0 390 330"><g filter="url(#wc)" opacity=".8"><ellipse cx="195" cy="148" rx="156" ry="128" fill="#A7CDEA"/><ellipse cx="176" cy="138" rx="122" ry="104" fill="#C6DFF4" opacity=".82"/><ellipse cx="240" cy="190" rx="82" ry="60" fill="#B7D6EF" opacity=".72"/></g><g filter="url(#wc2)" opacity=".58"><ellipse cx="300" cy="70" rx="66" ry="46" fill="#97C2E6"/><ellipse cx="70" cy="240" rx="54" ry="34" fill="#BAD8F0"/><ellipse cx="330" cy="205" rx="42" ry="30" fill="#D4E8F8"/><ellipse cx="105" cy="78" rx="46" ry="30" fill="#A6CDEB"/></g><g filter="url(#wc2)" opacity=".48"><ellipse cx="58" cy="120" rx="34" ry="24" fill="#EAD6B9"/><ellipse cx="322" cy="268" rx="38" ry="24" fill="#C9E3D2"/></g></svg>
+    <svg class="wash" width="390" height="330" viewBox="0 0 390 330">
+      <!-- 一幅偏侧的水彩：左上为主、右上回应，中央金额区主动留白 -->
+      <g filter="url(#wc-home)" opacity=".76">
+        <path d="M-24 18C14-7 61-2 94 15C124 30 139 50 125 71C111 92 82 82 66 104C47 131 68 151 47 176C27 198-6 185-24 160Z" fill="#A9C3D2"/>
+        <path d="M279-18C322-10 367 2 408 29L414 126C388 143 363 126 350 103C337 80 312 87 296 66C278 43 263 4 279-18Z" fill="#B8CDD9" opacity=".72"/>
+      </g>
+      <g filter="url(#wc-home-dry)" opacity=".42">
+        <path d="M58-8C110 7 143 4 179 14C212 23 234 12 267 17C293 21 311 34 307 48C302 63 273 59 250 53C216 44 194 52 161 42C127 32 94 39 66 25Z" fill="#C5D6DF"/>
+        <path d="M-8 184C15 166 43 169 63 183C81 196 78 211 58 217C34 224 8 214-8 205Z" fill="#D8C4A5"/>
+        <path d="M340 151C358 140 382 147 394 164C403 178 391 191 372 187C353 182 338 169 340 151Z" fill="#B7C6B5"/>
+      </g>
+    </svg>
     <div class="bodyz">
       <div class="hero">
         <div class="date" id="h-date">—</div>
@@ -198,24 +228,24 @@
        10-13  视图层
        20-32  功能层
        40-99  路由与启动（99-main.js 必须最后） -->
-<script src="js/00-config.js?v=20261105e"></script>
-<script src="js/01-utils.js?v=20261105e"></script>
-<script src="js/02-db.js?v=20261105e"></script>
-<script src="js/03-domain.js?v=20261105e"></script>
-<script src="js/04-ui.js?v=20261105e"></script>
+<script src="js/00-config.js?v=20261105g"></script>
+<script src="js/01-utils.js?v=20261105g"></script>
+<script src="js/02-db.js?v=20261105g"></script>
+<script src="js/03-domain.js?v=20261105g"></script>
+<script src="js/04-ui.js?v=20261105g"></script>
 
-<script src="js/10-home.js?v=20261105e"></script>
-<script src="js/11-detail.js?v=20261105e"></script>
-<script src="js/12-stat.js?v=20261105e"></script>
-<script src="js/13-me.js?v=20261105e"></script>
-<script src="js/14-avatar.js?v=20261105e"></script>
+<script src="js/10-home.js?v=20261105g"></script>
+<script src="js/11-detail.js?v=20261105g"></script>
+<script src="js/12-stat.js?v=20261105g"></script>
+<script src="js/13-me.js?v=20261105g"></script>
+<script src="js/14-avatar.js?v=20261105g"></script>
 
-<script src="js/20-record.js?v=20261105e"></script>
-<script src="js/30-budget.js?v=20261105e"></script>
-<script src="js/31-categories.js?v=20261105e"></script>
-<script src="js/32-backup.js?v=20261105e"></script>
+<script src="js/20-record.js?v=20261105g"></script>
+<script src="js/30-budget.js?v=20261105g"></script>
+<script src="js/31-categories.js?v=20261105g"></script>
+<script src="js/32-backup.js?v=20261105g"></script>
 
-<script src="js/40-router.js?v=20261105e"></script>
-<script src="js/99-main.js?v=20261105e"></script>
+<script src="js/40-router.js?v=20261105g"></script>
+<script src="js/99-main.js?v=20261105g"></script>
 </body>
 </html>
