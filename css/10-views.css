@@ -4,7 +4,10 @@
  * 字号一律取 --t-* 档位（见 00-base.css），不要写裸 px
  * ================================================================ */
 /* 首页 */
-.hero{text-align:center;padding:6px 24px 0;position:relative}
+/* 首页无状态栏，顶部留白由 hero 自己承担 */
+.hero{text-align:center;padding:26px 24px 0;position:relative}
+/* 少了 52px 状态栏，水彩淡出点同步上移，别让 56px 数字落回深色块上 */
+#v-home .wash{-webkit-mask-image:linear-gradient(to bottom,#000 0,#000 56px,rgba(0,0,0,.42) 136px,transparent 216px);mask-image:linear-gradient(to bottom,#000 0,#000 56px,rgba(0,0,0,.42) 136px,transparent 216px)}
 /* 数字区柔光：在 hero 背后铺一层接近纸色的椭圆晕，把水彩的深浅压平，
    保证 56px 数字在全天候都是同一档对比度（水彩本身保留，只是不在数字正后方） */
 .hero::before{content:'';position:absolute;left:50%;top:-16px;transform:translateX(-50%);width:346px;height:258px;pointer-events:none;z-index:-1;
