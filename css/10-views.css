@@ -7,11 +7,12 @@
 /* 首页无状态栏，顶部留白由 hero 自己承担 */
 .hero{text-align:center;padding:26px 24px 0;position:relative}
 /* 少了 52px 状态栏，水彩淡出点同步上移，别让 56px 数字落回深色块上 */
-#v-home .wash{-webkit-mask-image:linear-gradient(to bottom,#000 0,#000 56px,rgba(0,0,0,.42) 136px,transparent 216px);mask-image:linear-gradient(to bottom,#000 0,#000 56px,rgba(0,0,0,.42) 136px,transparent 216px)}
-/* 数字区柔光：在 hero 背后铺一层接近纸色的椭圆晕，把水彩的深浅压平，
-   保证 56px 数字在全天候都是同一档对比度（水彩本身保留，只是不在数字正后方） */
-.hero::before{content:'';position:absolute;left:50%;top:-16px;transform:translateX(-50%);width:346px;height:258px;pointer-events:none;z-index:-1;
-  background:radial-gradient(ellipse at center,rgba(248,251,254,.95) 0,rgba(248,251,254,.8) 38%,rgba(248,251,254,.35) 62%,rgba(248,251,254,0) 78%)}
+#v-home .wash{-webkit-mask-image:linear-gradient(to bottom,#000 0,#000 64px,rgba(0,0,0,.5) 152px,transparent 248px);mask-image:linear-gradient(to bottom,#000 0,#000 64px,rgba(0,0,0,.5) 152px,transparent 248px)}
+/* 数字区柔光：只护住数字本身（中心 24% 近乎不透明白），中环快速衰减，
+   让水彩在数字周围仍然露得出来——纯靠扩大水彩面积换「明艳」会牺牲对比度，
+   真正该做的是缩小被擦白的范围 */
+.hero::before{content:'';position:absolute;left:50%;top:-20px;transform:translateX(-50%);width:352px;height:236px;pointer-events:none;z-index:-1;
+  background:radial-gradient(ellipse at center,rgba(250,252,255,.9) 0,rgba(250,252,255,.86) 24%,rgba(250,252,255,.44) 56%,rgba(250,252,255,0) 84%)}
 .hero .date{font-size:var(--t-cap);color:var(--ink2);margin-bottom:18px}
 .amt-label{font-size:var(--t-cap);color:var(--ink2);font-weight:500;letter-spacing:.14em;margin-bottom:6px}
 .amt{font-size:var(--t-display);font-weight:300;line-height:1;letter-spacing:-.02em}
