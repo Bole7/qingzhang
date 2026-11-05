@@ -30,12 +30,15 @@ function renderHome(){
     const left=limit-monthOut;
     /* 剩余日均可用（含今天口径）：剩余天数 = 当月总天数 − 今天日期 + 1 */
     const days=daysInMonth(m)-d.getDate()+1;
-    const note = left>=0
-      ? `剩余 ¥${fmt(left)}，还有 ${days} 天，日均可用 ¥${fmt(Math.max(0,Math.round(left/days)))}`
-      : `已超出 ¥${fmt(-left)}，本月还有 ${days} 天`;
+    const daily = left>=0
+      ? `日均可用 <b>¥${fmt(Math.max(0,Math.round(left/days)))}</b>`
+      : `已超出 <b>¥${fmt(-left)}</b>`;
+    const remain = left>=0
+      ? `剩余 ¥${fmt(left)} · 还有 ${days} 天`
+      : `本月还有 ${days} 天`;
     box.innerHTML=`<div class="budget"><div class="row"><span>本月预算</span><span><b>${fmt(monthOut)}</b> / ${fmt(limit)}</span></div>
       <div class="bar"><i style="width:${Math.min(pct,100)}%;background:${color}"></i></div>
-      <div class="bar-note">${note}</div></div>`;
+      <div class="bar-note"><span class="daily">${daily}</span><span class="remain">${remain}</span></div></div>`;
   }
 
   /* 只显示今天的记录，按记账先后正序 */

@@ -15,7 +15,7 @@
 .hero .date{font-size:var(--t-cap);color:var(--ink2);margin-bottom:18px}
 .amt-label{font-size:var(--t-cap);color:var(--ink2);font-weight:500;letter-spacing:.14em;margin-bottom:6px}
 .amt{font-size:var(--t-display);font-weight:300;line-height:1;letter-spacing:-.02em}
-.amt .cny{font-size:.4em;margin-right:4px;color:var(--ink2)}
+.amt .cny{font-size:.4em;margin-right:6px;color:var(--ink2);font-weight:400;letter-spacing:0}
 .amt-sub{margin-top:14px;font-size:var(--t-body);color:var(--ink2)}
 .amt-sub b{font-weight:500;color:var(--ink)}
 .chip{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:5px 14px;border-radius:20px;background:rgba(255,255,255,.72);font-size:var(--t-cap);color:var(--ink2);border:.5px solid rgba(127,168,212,.28)}
@@ -26,7 +26,10 @@
 .budget .row b{font-size:var(--t-body);color:var(--ink);font-weight:500}
 .bar{height:7px;border-radius:6px;background:#E7F0F8;overflow:hidden}
 .bar i{display:block;height:100%;border-radius:6px;background:var(--blue);transition:width .4s ease}
-.bar-note{margin-top:8px;font-size:var(--t-cap);color:var(--ink2)}
+.bar-note{margin-top:10px;display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:6px 10px}
+.bar-note .daily{flex:0 0 auto;font-size:var(--t-body);color:var(--ink)}
+.bar-note .daily b{font-size:var(--t-card);font-weight:500}
+.bar-note .remain{margin-left:auto;text-align:right;font-size:var(--t-cap);color:var(--ink2)}
 /* ---------- 容器两档：一屏只有一张主卡 ---------- */
 /* 主卡：白底、无边框、大圆角 + 极淡双层阴影（取代原来的 0.5px 描边） */
 .card{margin:28px 22px 0;background:var(--surface);border:0;border-radius:26px;padding:16px 18px;box-shadow:0 1px 2px rgba(46,62,78,.035),0 10px 26px -14px rgba(46,62,78,.16)}
@@ -42,7 +45,7 @@
 .item .t p{margin:0;font-size:var(--t-body);font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .item .t span{font-size:var(--t-cap);color:var(--ink2)}
 /* 行内金额是全行的落点：升到 card 档 + 500，和左侧文案拉开 1.19× */
-.item .v{font-size:var(--t-card);font-weight:500;letter-spacing:.01em}
+.item .v{margin-left:auto;text-align:right;white-space:nowrap;font-size:var(--t-card);font-weight:500;letter-spacing:.01em}
 .minus{color:var(--ink)} .plus{color:var(--green)}
 .empty{text-align:center;padding:26px 10px 20px;color:var(--ink2);font-size:var(--t-body);line-height:1.9}
 .empty .big{font-size:32px;opacity:.5;margin-bottom:6px}

@@ -35,6 +35,20 @@
 /* 明细条目「大额」小标（不计入本月统计的记录） */
 .tagx{font-style:normal;font-size:var(--t-cap);color:var(--ink3);background:#EDF3F9;border-radius:8px;padding:2px 6px;margin-left:6px;vertical-align:1px}
 
+/* ---------- 轻量按压反馈：只给真实可交互元素，不给展示型卡片 ---------- */
+.item,.tab,.fab,.arrow,.row-l,.card-head a,.btn,.chipx,.datepill,.qchip,.dayadd,
+.rec-note,.rec-toggle,.seg button,.cat,.sub,.save,.mtitle,.back,.lg{
+  transition:opacity .15s ease,transform .15s ease
+}
+.item:active,.tab:active,.arrow:active,.row-l:active,.card-head a:active,.btn:active,
+.chipx:active,.datepill:active,.qchip:active,.dayadd:active,.rec-note:active,
+.rec-toggle:active,.seg button:active,.cat:active,.sub:active,.save:not(.off):active,
+.mtitle:active,.back:active,.lg:active{opacity:.55}
+.fab:active{opacity:.7;transform:scale(.94)}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
+
 /* ---------- 头像裁剪层（全屏深色，取景框圆角与 .avatar 一致 = 20/58） ---------- */
 .ava-layer{position:fixed;inset:0;z-index:80;display:none;flex-direction:column;background:linear-gradient(180deg,#19222D 0%,#111A24 100%);color:#fff;touch-action:none;padding:calc(env(safe-area-inset-top,0px) + 14px) 22px calc(env(safe-area-inset-bottom,0px) + 22px)}
 .ava-layer.on{display:flex;animation:fade .18s ease}
